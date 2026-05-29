@@ -1,0 +1,127 @@
+<div class="min-h-screen bg-slate-50/50 p-8">
+  <div class="max-w-7xl mx-auto">
+    
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-6">
+      <div>
+        <h1 class="text-4xl font-black text-slate-800 mb-2">Bienvenue, {{userName}} 👋</h1>
+        <p class="text-slate-500 font-medium">Voici l'aperçu de vos projets et activités en cours.</p>
+      </div>
+      <div class="flex gap-4">
+        <button class="btn btn-outline border-slate-200 rounded-2xl px-6 h-12 font-black">
+          Exporter
+        </button>
+        <button class="btn btn-primary rounded-2xl px-8 h-12 font-black shadow-xl shadow-primary/20 border-none">
+          + Nouveau projet
+        </button>
+      </div>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+      <div class="bg-white p-8 rounded-[32px] shadow-sm border border-slate-100 group hover:border-primary/30 transition-all duration-300">
+        <div class="flex justify-between items-start mb-4">
+          <div class="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">🚀</div>
+          <span class="text-xs font-black text-green-500 bg-green-50 px-2 py-1 rounded-lg">+12%</span>
+        </div>
+        <p class="text-slate-400 font-black text-[10px] uppercase tracking-[0.2em] mb-1">Demandes actives</p>
+        <p class="text-4xl font-black text-slate-800 tracking-tight">02</p>
+      </div>
+
+      <div class="bg-white p-8 rounded-[32px] shadow-sm border border-slate-100 group hover:border-primary/30 transition-all duration-300">
+        <div class="flex justify-between items-start mb-4">
+          <div class="w-12 h-12 bg-amber-500/10 rounded-2xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">💰</div>
+          <span class="text-xs font-black text-slate-400 bg-slate-50 px-2 py-1 rounded-lg">Total</span>
+        </div>
+        <p class="text-slate-400 font-black text-[10px] uppercase tracking-[0.2em] mb-1">Dépenses totales</p>
+        <p class="text-4xl font-black text-slate-800 tracking-tight">90k <span class="text-lg text-slate-400">GNF</span></p>
+      </div>
+
+      <div class="bg-white p-8 rounded-[32px] shadow-sm border border-slate-100 group hover:border-primary/30 transition-all duration-300">
+        <div class="flex justify-between items-start mb-4">
+          <div class="w-12 h-12 bg-green-500/10 rounded-2xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">⭐</div>
+          <span class="text-xs font-black text-primary bg-primary/5 px-2 py-1 rounded-lg">Top</span>
+        </div>
+        <p class="text-slate-400 font-black text-[10px] uppercase tracking-[0.2em] mb-1">Artisans favoris</p>
+        <p class="text-4xl font-black text-slate-800 tracking-tight">05</p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      
+      <!-- Table Section -->
+      <div class="lg:col-span-2 space-y-8">
+        <div class="bg-white rounded-[40px] shadow-sm border border-slate-100 overflow-hidden">
+          <div class="p-8 border-b border-slate-50 flex justify-between items-center">
+            <h3 class="font-black text-2xl text-slate-800">Projets Récents</h3>
+            <button class="text-primary font-black text-sm hover:underline">Voir tout</button>
+          </div>
+          <div class="overflow-x-auto p-6">
+            <table class="table w-full">
+              <thead>
+                <tr class="text-slate-400 font-black uppercase text-[10px] tracking-widest border-none">
+                  <th class="bg-transparent">Artisan</th>
+                  <th class="bg-transparent">Service</th>
+                  <th class="bg-transparent">Statut</th>
+                  <th class="bg-transparent text-right">Prix</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let p of projets" class="hover:bg-slate-50 transition-colors">
+                  <td class="border-none py-4">
+                    <div class="flex items-center gap-3">
+                      <div class="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center font-black text-slate-500 text-xs">
+                        {{p.artisan[0]}}
+                      </div>
+                      <span class="font-bold text-slate-800">{{p.artisan}}</span>
+                    </div>
+                  </td>
+                  <td class="border-none text-slate-500 font-medium">{{p.service}}</td>
+                  <td class="border-none">
+                    <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border" [ngClass]="getStatusClass(p.status)">
+                      {{p.status}}
+                    </span>
+                  </td>
+                  <td class="border-none text-right font-black text-slate-800">{{p.price}}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar: Earnings Chart (Simulated) -->
+      <div class="lg:col-span-1">
+        <div class="bg-slate-800 rounded-[40px] p-8 text-white shadow-2xl relative overflow-hidden h-full">
+          <div class="absolute top-0 right-0 w-32 h-32 bg-primary/20 rounded-full blur-3xl"></div>
+          
+          <h3 class="text-xl font-black mb-1">Aperçu Revenus</h3>
+          <p class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-8">Derniers 6 mois</p>
+          
+          <div class="flex items-end justify-between h-48 gap-2 mb-8 px-2">
+            <div *ngFor="let e of earnings" class="flex-1 flex flex-col items-center gap-2 group">
+              <div class="w-full bg-primary/20 rounded-t-lg relative group-hover:bg-primary transition-all cursor-pointer" 
+                   [style.height]="e.height">
+                <div class="absolute -top-10 left-1/2 -translate-x-1/2 bg-white text-slate-800 px-2 py-1 rounded-md text-[10px] font-black opacity-0 group-hover:opacity-100 transition-opacity">
+                  {{e.amount}}
+                </div>
+              </div>
+              <span class="text-[10px] font-black text-slate-500 group-hover:text-white transition-colors">{{e.month}}</span>
+            </div>
+          </div>
+
+          <div class="space-y-4">
+            <div class="p-4 bg-white/5 rounded-2xl border border-white/10">
+              <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Revenu Total</p>
+              <p class="text-2xl font-black mt-1">477.000 <span class="text-xs text-slate-500">GNF</span></p>
+            </div>
+            <button class="btn btn-primary w-full rounded-2xl border-none h-12 font-black normal-case">
+              Voir les détails
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>

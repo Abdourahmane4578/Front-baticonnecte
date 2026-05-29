@@ -1,0 +1,99 @@
+<div class="min-h-screen bg-slate-50 relative overflow-hidden py-24 px-6">
+  <!-- Decorative background -->
+  <div class="absolute top-0 right-0 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[120px] -z-10"></div>
+  <div class="absolute bottom-0 left-0 w-[600px] h-[600px] bg-blue-500/5 rounded-full blur-[100px] -z-10"></div>
+
+  <div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="text-center max-w-2xl mx-auto mb-16">
+      <div class="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 rounded-lg text-primary text-[10px] font-black uppercase tracking-widest mb-4">
+        Job Board
+      </div>
+      <h1 class="text-4xl md:text-5xl font-black text-slate-800 tracking-tight">Les Annonces Clients</h1>
+      <p class="text-slate-500 font-medium text-lg mt-4">Trouvez de nouveaux chantiers publiés par des particuliers et des entreprises en Guinée.</p>
+    </div>
+    
+    <div class="flex flex-col lg:flex-row gap-8">
+      
+      <!-- Filters Sidebar -->
+      <aside class="lg:w-80 space-y-8">
+        <div class="bg-white p-8 rounded-[32px] border border-slate-100 shadow-sm sticky top-28">
+          <h3 class="text-xl font-black text-slate-800 mb-6">Filtres</h3>
+          
+          <div class="space-y-6">
+            <div class="form-control">
+              <label class="label"><span class="label-text font-bold text-slate-400 uppercase text-[10px] tracking-widest ml-2">Métier ou Mot-clé</span></label>
+              <div class="relative">
+                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">🔍</span>
+                <input type="text" [(ngModel)]="searchMetier" (ngModelChange)="applyFilters()" placeholder="Ex: Peintre" 
+                       class="w-full h-12 pl-10 pr-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-primary/30 focus:ring-4 focus:ring-primary/5 outline-none font-medium text-sm transition-all">
+              </div>
+            </div>
+
+            <div class="form-control">
+              <label class="label"><span class="label-text font-bold text-slate-400 uppercase text-[10px] tracking-widest ml-2">Ville</span></label>
+              <div class="relative">
+                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">📍</span>
+                <input type="text" [(ngModel)]="searchVille" (ngModelChange)="applyFilters()" placeholder="Ex: Conakry" 
+                       class="w-full h-12 pl-10 pr-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-primary/30 focus:ring-4 focus:ring-primary/5 outline-none font-medium text-sm transition-all">
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Results Grid -->
+      <main class="flex-1">
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          
+          <!-- Job Card -->
+          <div *ngFor="let annonce of filteredAnnonces" 
+               class="group bg-white rounded-[32px] p-8 border border-slate-100 shadow-sm hover:shadow-2xl transition-all duration-500 hover:-translate-y-1 relative flex flex-col h-full">
+            
+            <div class="flex justify-between items-start mb-4">
+              <div class="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-50 text-slate-500 rounded-lg text-[10px] font-black uppercase tracking-widest">
+                <span>📍</span> {{annonce.ville}}
+              </div>
+              <div [ngClass]="annonce.urgence === 'Urgent' ? 'bg-red-50 text-red-500' : 'bg-primary/10 text-primary'" 
+                   class="px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest">
+                {{annonce.urgence}}
+              </div>
+            </div>
+
+            <h3 class="text-xl font-black text-slate-800 leading-tight mb-2 group-hover:text-primary transition-colors">{{annonce.titre}}</h3>
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-4">{{annonce.metier}}</p>
+            
+            <p class="text-sm text-slate-500 line-clamp-3 mb-6 flex-1 font-medium leading-relaxed">{{annonce.description}}</p>
+
+            <div class="pt-6 border-t border-slate-50 mt-auto">
+              <div class="flex items-center justify-between mb-6">
+                <div>
+                  <p class="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-1">Budget</p>
+                  <p class="font-black text-slate-800">{{annonce.budget}} <span class="text-[10px] text-slate-400">GNF</span></p>
+                </div>
+                <div class="text-right">
+                  <p class="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-1">Publié</p>
+                  <p class="text-xs font-bold text-slate-600">{{annonce.date}}</p>
+                </div>
+              </div>
+              
+              <button routerLink="/messages" class="btn btn-primary w-full rounded-2xl normal-case font-black shadow-lg shadow-primary/20 group-hover:shadow-primary/40 transition-all border-none">
+                Contacter le client
+              </button>
+            </div>
+            
+          </div>
+        </div>
+
+        <!-- Empty State -->
+        <div *ngIf="filteredAnnonces.length === 0" class="py-24 text-center bg-white rounded-[40px] border-2 border-dashed border-slate-100 shadow-sm mt-6">
+          <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6 text-3xl">🔍</div>
+          <h3 class="text-2xl font-black text-slate-800 mb-2">Aucune annonce trouvée</h3>
+          <p class="text-slate-500 font-medium">Modifiez vos critères de recherche.</p>
+        </div>
+      </main>
+      
+    </div>
+  </div>
+</div>

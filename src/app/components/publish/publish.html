@@ -1,0 +1,175 @@
+<div class="min-h-screen bg-slate-50 relative overflow-hidden py-24 px-6">
+  <!-- Decorative background -->
+  <div class="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[100px] -z-10"></div>
+  <div class="absolute bottom-0 left-0 w-[400px] h-[400px] bg-blue-500/5 rounded-full blur-[80px] -z-10"></div>
+
+  <div class="max-w-3xl mx-auto">
+    <div class="bg-white rounded-[40px] shadow-2xl border border-slate-100 overflow-hidden">
+      
+      <!-- Header with Tabs -->
+      <div class="bg-slate-100 p-8 md:p-12 relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-32 h-32 bg-primary/20 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2"></div>
+        
+        <div class="relative z-10 flex flex-col items-center text-center">
+          <h1 class="text-3xl md:text-4xl font-black text-slate-800 leading-tight mb-8">Que souhaitez-vous faire ?</h1>
+          
+          <!-- Custom Tabs -->
+          <div class="bg-white p-1.5 rounded-2xl flex items-center shadow-sm w-full md:w-auto border border-slate-200">
+            <button (click)="switchTab('besoin')"
+                    [class]="activeTab === 'besoin' ? 'bg-primary text-white shadow-md' : 'text-slate-500 hover:text-slate-800'"
+                    class="flex-1 md:w-64 h-12 rounded-xl text-sm font-black transition-all flex items-center justify-center gap-2">
+              📝 Chercher un artisan
+            </button>
+            <button (click)="switchTab('offre')"
+                    [class]="activeTab === 'offre' ? 'bg-slate-800 text-white shadow-md' : 'text-slate-500 hover:text-slate-800'"
+                    class="flex-1 md:w-64 h-12 rounded-xl text-sm font-black transition-all flex items-center justify-center gap-2">
+              💼 Proposer mes services
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- FORMULAIRE BESOIN (Client) -->
+      <form *ngIf="activeTab === 'besoin'" (ngSubmit)="publierBesoin()" class="p-10 md:p-14 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div class="mb-4">
+          <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary mb-2">Espace Client</p>
+          <h2 class="text-2xl font-black text-slate-800">Exprimez votre besoin</h2>
+          <p class="text-slate-500 text-sm mt-1">Publiez votre projet pour recevoir des propositions des artisans.</p>
+        </div>
+
+        <div class="form-control">
+          <label class="label"><span class="label-text font-black text-slate-400 uppercase text-[10px] tracking-widest ml-2">Titre du projet</span></label>
+          <div class="relative">
+            <span class="absolute left-5 top-1/2 -translate-y-1/2 text-xl">📝</span>
+            <input type="text" [(ngModel)]="besoin.titre" name="titre" placeholder="Ex: Rénovation électrique complète" required
+                   class="input input-bordered w-full h-14 pl-14 rounded-2xl bg-slate-50 focus:input-primary transition-all border-slate-100 font-medium">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div class="form-control">
+            <label class="label"><span class="label-text font-black text-slate-400 uppercase text-[10px] tracking-widest ml-2">Métier recherché</span></label>
+            <div class="relative">
+              <span class="absolute left-5 top-1/2 -translate-y-1/2 text-xl">🛠️</span>
+              <input type="text" [(ngModel)]="besoin.metier" name="metier" placeholder="Ex: Electricien" required
+                     class="input input-bordered w-full h-14 pl-14 rounded-2xl bg-slate-50 focus:input-primary transition-all border-slate-100 font-medium">
+            </div>
+          </div>
+          <div class="form-control">
+            <label class="label"><span class="label-text font-black text-slate-400 uppercase text-[10px] tracking-widest ml-2">Ville</span></label>
+            <div class="relative">
+              <span class="absolute left-5 top-1/2 -translate-y-1/2 text-xl">📍</span>
+              <input type="text" [(ngModel)]="besoin.ville" name="ville" placeholder="Ex: Conakry" required
+                     class="input input-bordered w-full h-14 pl-14 rounded-2xl bg-slate-50 focus:input-primary transition-all border-slate-100 font-medium">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-control">
+          <label class="label"><span class="label-text font-black text-slate-400 uppercase text-[10px] tracking-widest ml-2">Détails des travaux</span></label>
+          <textarea [(ngModel)]="besoin.description" name="description" rows="5" required
+                    placeholder="Quels sont les travaux à prévoir ? Avez-vous déjà le matériel ?" 
+                    class="textarea textarea-bordered w-full p-6 rounded-3xl bg-slate-50 focus:textarea-primary transition-all border-slate-100 font-medium"></textarea>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div class="form-control">
+            <label class="label"><span class="label-text font-black text-slate-400 uppercase text-[10px] tracking-widest ml-2">Niveau d'urgence</span></label>
+            <select [(ngModel)]="besoin.urgence" name="urgence" class="select select-bordered w-full h-14 rounded-2xl bg-slate-50 focus:select-primary transition-all border-slate-100 font-medium">
+              <option value="normal">Dès que possible</option>
+              <option value="urgent">Urgent (Dépannage)</option>
+              <option value="planifie">Dans le mois</option>
+            </select>
+          </div>
+          <div class="form-control">
+            <label class="label"><span class="label-text font-black text-slate-400 uppercase text-[10px] tracking-widest ml-2">Budget indicatif</span></label>
+            <div class="relative">
+              <input type="number" [(ngModel)]="besoin.budget" name="budget" placeholder="0" 
+                     class="input input-bordered w-full h-14 pr-14 rounded-2xl bg-slate-50 focus:input-primary transition-all border-slate-100 font-black text-lg">
+              <span class="absolute right-6 top-1/2 -translate-y-1/2 font-black text-slate-400 text-xs">GNF</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="pt-8 border-t border-slate-50">
+          <button type="submit" 
+                  class="btn btn-primary w-full h-16 rounded-2xl text-white normal-case text-lg font-black shadow-xl shadow-primary/30 hover:scale-[1.01] active:scale-95 transition-all border-none">
+            Publier mon besoin
+          </button>
+        </div>
+      </form>
+
+
+      <!-- FORMULAIRE OFFRE (Artisan) -->
+      <form *ngIf="activeTab === 'offre'" (ngSubmit)="publierOffre()" class="p-10 md:p-14 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div class="mb-4">
+          <p class="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 mb-2">Espace Artisan</p>
+          <h2 class="text-2xl font-black text-slate-800">Proposez vos services</h2>
+          <p class="text-slate-500 text-sm mt-1">Créez une annonce pour présenter votre savoir-faire aux clients.</p>
+        </div>
+
+        <div class="form-control">
+          <label class="label"><span class="label-text font-black text-slate-400 uppercase text-[10px] tracking-widest ml-2">Titre de votre service</span></label>
+          <div class="relative">
+            <span class="absolute left-5 top-1/2 -translate-y-1/2 text-xl">📢</span>
+            <input type="text" [(ngModel)]="offre.titre" name="titreOffre" placeholder="Ex: Plombier Expert avec 10 ans d'expérience" required
+                   class="input input-bordered w-full h-14 pl-14 rounded-2xl bg-slate-50 focus:input-slate-800 transition-all border-slate-100 font-medium">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div class="form-control">
+            <label class="label"><span class="label-text font-black text-slate-400 uppercase text-[10px] tracking-widest ml-2">Votre Métier</span></label>
+            <div class="relative">
+              <span class="absolute left-5 top-1/2 -translate-y-1/2 text-xl">🛠️</span>
+              <input type="text" [(ngModel)]="offre.metier" name="metierOffre" placeholder="Ex: Plombier" required
+                     class="input input-bordered w-full h-14 pl-14 rounded-2xl bg-slate-50 focus:input-slate-800 transition-all border-slate-100 font-medium">
+            </div>
+          </div>
+          <div class="form-control">
+            <label class="label"><span class="label-text font-black text-slate-400 uppercase text-[10px] tracking-widest ml-2">Zone d'intervention</span></label>
+            <div class="relative">
+              <span class="absolute left-5 top-1/2 -translate-y-1/2 text-xl">📍</span>
+              <input type="text" [(ngModel)]="offre.ville" name="villeOffre" placeholder="Ex: Conakry & Alentours" required
+                     class="input input-bordered w-full h-14 pl-14 rounded-2xl bg-slate-50 focus:input-slate-800 transition-all border-slate-100 font-medium">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-control">
+          <label class="label"><span class="label-text font-black text-slate-400 uppercase text-[10px] tracking-widest ml-2">Description de vos compétences</span></label>
+          <textarea [(ngModel)]="offre.description" name="descOffre" rows="5" required
+                    placeholder="Présentez-vous, détaillez vos spécialités et vos garanties..." 
+                    class="textarea textarea-bordered w-full p-6 rounded-3xl bg-slate-50 focus:textarea-slate-800 transition-all border-slate-100 font-medium"></textarea>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div class="form-control">
+            <label class="label"><span class="label-text font-black text-slate-400 uppercase text-[10px] tracking-widest ml-2">Disponibilité</span></label>
+            <select [(ngModel)]="offre.disponibilite" name="dispoOffre" class="select select-bordered w-full h-14 rounded-2xl bg-slate-50 focus:select-slate-800 transition-all border-slate-100 font-medium">
+              <option value="immediate">Immédiate</option>
+              <option value="sur_rdv">Sur Rendez-vous</option>
+              <option value="soirs_weekends">Soirs & Week-ends</option>
+            </select>
+          </div>
+          <div class="form-control">
+            <label class="label"><span class="label-text font-black text-slate-400 uppercase text-[10px] tracking-widest ml-2">Tarif estimé / Jour (Optionnel)</span></label>
+            <div class="relative">
+              <input type="number" [(ngModel)]="offre.tarif" name="tarifOffre" placeholder="0" 
+                     class="input input-bordered w-full h-14 pr-14 rounded-2xl bg-slate-50 focus:input-slate-800 transition-all border-slate-100 font-black text-lg">
+              <span class="absolute right-6 top-1/2 -translate-y-1/2 font-black text-slate-400 text-xs">GNF</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="pt-8 border-t border-slate-50">
+          <button type="submit" 
+                  class="btn bg-slate-800 hover:bg-slate-900 w-full h-16 rounded-2xl text-white normal-case text-lg font-black shadow-xl shadow-slate-800/30 hover:scale-[1.01] active:scale-95 transition-all border-none">
+            Mettre en ligne mon offre
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</div>

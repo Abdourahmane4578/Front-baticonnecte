@@ -1,0 +1,96 @@
+<div class="min-h-screen bg-slate-50 relative overflow-hidden py-24 px-6">
+  <!-- Decorative background -->
+  <div class="absolute top-0 right-0 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[120px] -z-10"></div>
+
+  <div class="max-w-3xl mx-auto">
+    
+    <button (click)="location.back()" class="group mb-8 flex items-center gap-3 text-slate-500 hover:text-primary transition-all font-bold">
+      <span class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm group-hover:shadow-md transition-all">←</span>
+      Retour au profil
+    </button>
+
+    <div class="bg-white rounded-[40px] shadow-2xl border border-slate-100 overflow-hidden">
+      
+      <div class="bg-slate-100 p-10 md:p-14 text-slate-800 relative">
+        <div class="absolute top-0 right-0 w-32 h-32 bg-primary/20 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2"></div>
+        <div class="relative z-10">
+          <p class="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 mb-4">Demande de devis</p>
+          <h1 class="text-3xl md:text-4xl font-black text-slate-800 leading-tight">Projet pour <span class="text-primary">{{artisanName}}</span></h1>
+          <p class="text-slate-500 mt-4 font-medium">Décrivez précisément votre besoin pour obtenir un chiffrage juste.</p>
+        </div>
+      </div>
+
+      <form [formGroup]="devisForm" (ngSubmit)="onSubmit()" class="p-10 md:p-14 space-y-8">
+        
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text font-black text-slate-400 uppercase text-[10px] tracking-widest ml-2">Titre du projet</span>
+          </label>
+          <div class="relative">
+            <span class="absolute left-5 top-1/2 -translate-y-1/2 text-xl">📝</span>
+            <input type="text" formControlName="titre" placeholder="Ex: Rénovation électrique complète" 
+                   class="input input-bordered w-full h-14 pl-14 rounded-2xl bg-slate-50 focus:input-primary transition-all border-slate-100 font-medium">
+          </div>
+        </div>
+
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text font-black text-slate-400 uppercase text-[10px] tracking-widest ml-2">Détails de la prestation</span>
+          </label>
+          <textarea formControlName="description" rows="5" 
+                    placeholder="Quels sont les travaux à prévoir ? Avez-vous déjà le matériel ?" 
+                    class="textarea textarea-bordered w-full p-6 rounded-3xl bg-slate-50 focus:textarea-primary transition-all border-slate-100 font-medium"></textarea>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div class="form-control">
+            <label class="label">
+              <span class="label-text font-black text-slate-400 uppercase text-[10px] tracking-widest ml-2">Date souhaitée</span>
+            </label>
+            <div class="relative">
+              <span class="absolute left-5 top-1/2 -translate-y-1/2 text-xl">📅</span>
+              <input type="date" formControlName="dateSouhaitee" 
+                     class="input input-bordered w-full h-14 pl-14 rounded-2xl bg-slate-50 focus:input-primary transition-all border-slate-100 font-medium">
+            </div>
+          </div>
+
+          <div class="form-control">
+            <label class="label">
+              <span class="label-text font-black text-slate-400 uppercase text-[10px] tracking-widest ml-2">Niveau d'urgence</span>
+            </label>
+            <div class="relative">
+              <span class="absolute left-5 top-1/2 -translate-y-1/2 text-xl">⚡</span>
+              <select formControlName="urgence" class="select select-bordered w-full h-14 pl-14 rounded-2xl bg-slate-50 focus:select-primary transition-all border-slate-100 font-medium appearance-none">
+                <option value="normal">Dès que possible</option>
+                <option value="urgent">Urgent (Dépannage)</option>
+                <option value="planifie">Dans le mois</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-control max-w-xs">
+          <label class="label">
+            <span class="label-text font-black text-slate-400 uppercase text-[10px] tracking-widest ml-2">Budget indicatif</span>
+          </label>
+          <div class="relative">
+            <input type="text" formControlName="budget" placeholder="Ex: 50000" 
+                   class="input input-bordered w-full h-14 pr-14 rounded-2xl bg-slate-50 focus:input-primary transition-all border-slate-100 font-black text-lg">
+            <span class="absolute right-6 top-1/2 -translate-y-1/2 font-black text-slate-300 text-xs">GNF</span>
+          </div>
+        </div>
+
+        <div class="pt-8 border-t border-slate-50">
+          <button type="submit" [disabled]="devisForm.invalid"
+                  class="btn btn-primary w-full h-16 rounded-2xl text-white normal-case text-lg font-black shadow-xl shadow-primary/30 hover:scale-[1.01] active:scale-95 transition-all border-none disabled:bg-slate-100 disabled:text-slate-400">
+            Envoyer ma demande
+          </button>
+          <div class="flex items-center justify-center gap-2 mt-6 text-[10px] font-black uppercase text-slate-400 tracking-widest">
+            <span>🛡️</span> Gratuit et sans engagement
+          </div>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>

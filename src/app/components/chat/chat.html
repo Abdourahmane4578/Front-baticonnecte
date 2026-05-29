@@ -1,0 +1,112 @@
+<div class="h-[calc(100vh-80px)] bg-[#f3f2ef] flex justify-center p-4 md:p-8">
+  <div class="w-full max-w-6xl bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex h-full">
+
+    <!-- Sidebar (Conversations List) -->
+    <div [ngClass]="{'hidden md:flex': activeContact}"
+      class="w-full md:w-[340px] border-r border-slate-200 flex flex-col bg-white shrink-0">
+      <div class="p-4 border-b border-slate-200">
+        <h2 class="text-xl font-semibold text-slate-900 mb-4">Messagerie</h2>
+        <div class="relative">
+          <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">🔍</span>
+          <input type="text" placeholder="Rechercher des messages"
+            class="w-full h-10 pl-10 pr-4 bg-[#eef3f8] border-none rounded focus:ring-2 focus:ring-primary/40 text-sm font-medium outline-none transition-all placeholder-slate-600 text-slate-900">
+        </div>
+      </div>
+
+      <div class="flex-1 overflow-y-auto">
+        <div *ngFor="let c of conversations" (click)="selectContact(c)"
+          [ngClass]="c.active ? 'bg-slate-100/70 border-l-4 border-primary' : 'border-l-4 border-transparent hover:bg-slate-50'"
+          class="p-4 flex items-start gap-3 cursor-pointer transition-colors border-b border-slate-100">
+
+          <div class="relative shrink-0 mt-1">
+            <img [src]="'https://api.dicebear.com/8.x/avataaars/svg?seed=' + c.avatar"
+              class="w-12 h-12 rounded-full bg-slate-200 object-cover">
+            <div *ngIf="c.status === 'En ligne'"
+              class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-600 border-2 border-white rounded-full"></div>
+          </div>
+
+          <div class="flex-1 min-w-0">
+            <div class="flex justify-between items-baseline mb-0.5">
+              <p class="font-semibold text-slate-900 text-sm truncate pr-2">{{c.name}}</p>
+              <span class="text-xs text-slate-500 shrink-0">{{c.time}}</span>
+            </div>
+            <p [ngClass]="c.active ? 'text-slate-800' : 'text-slate-500'" class="text-sm truncate">
+              {{c.lastMsg}}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chat Area -->
+    <div [ngClass]="{'hidden md:flex': !activeContact, 'flex': activeContact}"
+      class="flex-1 flex-col bg-white h-full relative">
+
+      <!-- Chat Header -->
+      <div class="h-[72px] px-6 border-b border-slate-200 flex items-center justify-between shrink-0">
+        <div class="flex items-center gap-3">
+          <button (click)="activeContact = null"
+            class="md:hidden flex items-center justify-center w-8 h-8 rounded-full hover:bg-slate-100 text-slate-600 mr-1">
+            ←
+          </button>
+          <div>
+            <h3 class="font-semibold text-slate-900 text-base">{{activeContact.name}}</h3>
+            <p class="text-xs text-slate-500">{{activeContact.status}}</p>
+          </div>
+        </div>
+        <div class="flex gap-1">
+          <button
+            class="w-10 h-10 rounded-full hover:bg-slate-100 flex items-center justify-center text-slate-600 transition-colors">📞</button>
+          <button
+            class="w-10 h-10 rounded-full hover:bg-slate-100 flex items-center justify-center text-slate-600 transition-colors">⋮</button>
+        </div>
+      </div>
+
+      <!-- Messages Body -->
+      <div class="flex-1 overflow-y-auto p-6 space-y-6 bg-white">
+
+        <!-- Date Separator -->
+        <div class="flex items-center justify-center my-4">
+          <div class="bg-slate-100 px-3 py-1 rounded text-xs font-medium text-slate-600">Aujourd'hui</div>
+        </div>
+
+        <div *ngFor="let msg of messages" class="flex w-full" [ngClass]="msg.isMe ? 'justify-end' : 'justify-start'">
+
+          <div *ngIf="!msg.isMe" class="shrink-0 mr-3 mt-auto">
+            <img [src]="'https://api.dicebear.com/8.x/avataaars/svg?seed=' + activeContact.avatar"
+              class="w-8 h-8 rounded-full bg-slate-200">
+          </div>
+
+          <div class="flex flex-col max-w-[70%]" [ngClass]="msg.isMe ? 'items-end' : 'items-start'">
+            <div
+              [ngClass]="msg.isMe ? 'bg-primary text-white rounded-t-xl rounded-bl-xl' : 'bg-slate-100 text-slate-800 rounded-t-xl rounded-br-xl'"
+              class="p-3 px-4 text-sm font-medium leading-relaxed shadow-sm">
+              {{msg.text}}
+            </div>
+            <span class="text-[11px] text-slate-400 mt-1 font-medium px-1">{{msg.time}}</span>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Input Area -->
+      <div class="p-4 bg-white border-t border-slate-200 shrink-0">
+        <div
+          class="flex items-end gap-2 bg-[#f3f2ef] rounded-xl p-2 border border-slate-200 focus-within:border-primary/50 focus-within:bg-white transition-all">
+          <button
+            class="w-10 h-10 flex shrink-0 items-center justify-center text-slate-500 hover:text-slate-800 rounded-full hover:bg-slate-200/50 transition-colors">
+            📎
+          </button>
+          <textarea [(ngModel)]="newMessage" (keyup.enter)="sendMessage()" placeholder="Écrire un message..." rows="1"
+            class="w-full min-h-[40px] max-h-[120px] bg-transparent border-none outline-none text-sm text-slate-800 placeholder-slate-500 resize-none py-2.5"></textarea>
+          <button (click)="sendMessage()" [disabled]="!newMessage.trim()"
+            class="h-10 px-6 shrink-0 rounded-lg bg-primary text-white font-semibold text-sm hover:bg-primary/90 disabled:bg-slate-300 disabled:text-slate-500 transition-colors">
+            Envoyer
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
