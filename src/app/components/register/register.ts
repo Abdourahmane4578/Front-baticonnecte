@@ -15,13 +15,10 @@ export class Register {
 
   constructor(private fb: FormBuilder) {
     this.registerForm = this.fb.group({
-      fullName: ['', [Validators.required, Validators.minLength(3)]],
+      firstName: ['', [Validators.required, Validators.minLength(2)]],
+      lastName: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(8)]],
-      city: ['', [Validators.required]],
-      // Champs spécifiques à l'ouvrier (facultatifs selon le rôle)
-      speciality: [''],
-      phone: ['', [Validators.pattern('^[0-9]{10}$')]]
+      password: ['', [Validators.required, Validators.minLength(6)]]
     });
   }
 
