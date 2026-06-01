@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: front-baticonnect
+    env: docker
+    plan: free # Plan gratuit par défaut, à changer si besoin
+    region: frankfurt # Serveur basé en Europe
+    autoDeploy: true # Déploiement automatique à chaque push sur Github
+    envVars:
+      - key: PORT
+        value: 4000 # Doit correspondre au port configuré dans le Dockerfile
