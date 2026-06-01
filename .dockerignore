@@ -1,0 +1,12 @@
+node_modules
+dist
+.git
+.gitignore
+.editorconfig
+README.md
+*.log
+.angular
+.vscode
+.idea
+Dockerfile
+.dockerignore
