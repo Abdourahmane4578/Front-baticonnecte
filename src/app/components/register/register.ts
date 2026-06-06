@@ -12,6 +12,7 @@ import { RouterModule } from '@angular/router';
 export class Register {
   registerForm: FormGroup;
   userType: 'particulier' | 'ouvrier' = 'particulier';
+  isLoading = false;
 
   constructor(private fb: FormBuilder) {
     this.registerForm = this.fb.group({
@@ -28,9 +29,15 @@ export class Register {
 
   onSubmit() {
     if (this.registerForm.valid) {
+      this.isLoading = true;
       const data = { ...this.registerForm.value, role: this.userType };
       console.log('Inscription envoyée :', data);
-      // C'est ici qu'on enverra les données vers Spring Boot plus tard
+      
+      // Simulation appel réseau
+      setTimeout(() => {
+        this.isLoading = false;
+        // Navigation ou message de succès ici
+      }, 1500);
     }
   }
 }

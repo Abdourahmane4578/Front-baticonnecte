@@ -23,22 +23,30 @@
           
           <div class="form-control">
             <input type="text" formControlName="firstName" placeholder="Prénom" 
-                   class="w-full h-14 px-4 rounded-md border border-slate-600 bg-transparent focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all text-slate-900 font-medium placeholder-slate-500">
+                   class="w-full h-14 px-4 rounded-md border bg-transparent outline-none transition-all text-slate-900 font-medium placeholder-slate-500"
+                   [ngClass]="{'border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500': registerForm.get('firstName')?.invalid && registerForm.get('firstName')?.touched, 'border-slate-600 focus:border-primary focus:ring-1 focus:ring-primary': !(registerForm.get('firstName')?.invalid && registerForm.get('firstName')?.touched)}">
+            <span *ngIf="registerForm.get('firstName')?.invalid && registerForm.get('firstName')?.touched" class="text-red-500 text-xs mt-1 ml-1 font-medium">Le prénom est requis (min 2 caractères).</span>
           </div>
           
           <div class="form-control">
             <input type="text" formControlName="lastName" placeholder="Nom" 
-                   class="w-full h-14 px-4 rounded-md border border-slate-600 bg-transparent focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all text-slate-900 font-medium placeholder-slate-500">
+                   class="w-full h-14 px-4 rounded-md border bg-transparent outline-none transition-all text-slate-900 font-medium placeholder-slate-500"
+                   [ngClass]="{'border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500': registerForm.get('lastName')?.invalid && registerForm.get('lastName')?.touched, 'border-slate-600 focus:border-primary focus:ring-1 focus:ring-primary': !(registerForm.get('lastName')?.invalid && registerForm.get('lastName')?.touched)}">
+            <span *ngIf="registerForm.get('lastName')?.invalid && registerForm.get('lastName')?.touched" class="text-red-500 text-xs mt-1 ml-1 font-medium">Le nom est requis (min 2 caractères).</span>
           </div>
 
           <div class="form-control">
             <input type="email" formControlName="email" placeholder="E-mail ou téléphone" 
-                   class="w-full h-14 px-4 rounded-md border border-slate-600 bg-transparent focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all text-slate-900 font-medium placeholder-slate-500">
+                   class="w-full h-14 px-4 rounded-md border bg-transparent outline-none transition-all text-slate-900 font-medium placeholder-slate-500"
+                   [ngClass]="{'border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500': registerForm.get('email')?.invalid && registerForm.get('email')?.touched, 'border-slate-600 focus:border-primary focus:ring-1 focus:ring-primary': !(registerForm.get('email')?.invalid && registerForm.get('email')?.touched)}">
+            <span *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched" class="text-red-500 text-xs mt-1 ml-1 font-medium">Veuillez entrer une adresse e-mail valide.</span>
           </div>
 
           <div class="form-control">
             <input type="password" formControlName="password" placeholder="Mot de passe (au moins 6 caractères)" 
-                   class="w-full h-14 px-4 rounded-md border border-slate-600 bg-transparent focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all text-slate-900 font-medium placeholder-slate-500">
+                   class="w-full h-14 px-4 rounded-md border bg-transparent outline-none transition-all text-slate-900 font-medium placeholder-slate-500"
+                   [ngClass]="{'border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500': registerForm.get('password')?.invalid && registerForm.get('password')?.touched, 'border-slate-600 focus:border-primary focus:ring-1 focus:ring-primary': !(registerForm.get('password')?.invalid && registerForm.get('password')?.touched)}">
+            <span *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched" class="text-red-500 text-xs mt-1 ml-1 font-medium">Le mot de passe doit contenir au moins 6 caractères.</span>
           </div>
 
           <p class="text-[12px] text-slate-500 text-center leading-relaxed mt-4 mb-4">
@@ -46,9 +54,11 @@
           </p>
 
           <button type="submit" 
-                  [disabled]="registerForm.invalid"
-                  class="w-full h-[52px] bg-primary hover:bg-primary/90 text-white rounded-full text-base font-bold transition-all disabled:bg-slate-200 disabled:text-slate-500 mt-2">
-            Accepter et s'inscrire
+                  [disabled]="registerForm.invalid || isLoading"
+                  class="w-full h-[52px] bg-primary hover:bg-primary/90 text-white rounded-full text-base font-bold transition-all disabled:bg-slate-200 disabled:text-slate-500 mt-2 flex justify-center items-center gap-2">
+            <span *ngIf="isLoading" class="loading loading-spinner loading-sm"></span>
+            <span *ngIf="!isLoading">Accepter et s'inscrire</span>
+            <span *ngIf="isLoading">Inscription...</span>
           </button>
         </form>
 

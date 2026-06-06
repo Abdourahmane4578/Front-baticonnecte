@@ -17,6 +17,7 @@ export class Home {
   searchJob: string = '';
   searchCity: string = '';
   hasSearched: boolean = false;
+  isSearching: boolean = false;
   isLoggedIn: boolean = false;
 
   constructor() {
@@ -41,11 +42,16 @@ export class Home {
       return;
     }
 
-    this.hasSearched = true;
-    this.filteredOuvriers = this.allOuvriers.filter(artisan => {
-      const matchJob = artisan.job.toLowerCase().includes(this.searchJob.toLowerCase());
-      const matchCity = artisan.city.toLowerCase().includes(this.searchCity.toLowerCase());
-      return matchJob && matchCity;
-    });
+    this.isSearching = true;
+
+    setTimeout(() => {
+      this.hasSearched = true;
+      this.filteredOuvriers = this.allOuvriers.filter(artisan => {
+        const matchJob = artisan.job.toLowerCase().includes(this.searchJob.toLowerCase());
+        const matchCity = artisan.city.toLowerCase().includes(this.searchCity.toLowerCase());
+        return matchJob && matchCity;
+      });
+      this.isSearching = false;
+    }, 800);
   }
 }

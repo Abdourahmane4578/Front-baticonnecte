@@ -13,6 +13,7 @@ import { AuthService } from '../../services/auth'; // Importe ton service d'auth
 })
 export class Login {
   loginForm: FormGroup;
+  isLoading = false;
 
   constructor(
     private fb: FormBuilder,
@@ -27,13 +28,18 @@ export class Login {
 
   onSubmit() {
     if (this.loginForm.valid) {
+      this.isLoading = true;
       console.log('Tentative de connexion...', this.loginForm.value);
       
-      // 1. On informe l'application qu'on est connecté
-      this.authService.login();
-      
-      // 2. On redirige vers l'accueil (ou le dashboard)
-      this.router.navigate(['/']); 
+      // Simulation appel réseau
+      setTimeout(() => {
+        // 1. On informe l'application qu'on est connecté
+        this.authService.login();
+        
+        // 2. On redirige vers l'accueil (ou le dashboard)
+        this.router.navigate(['/']); 
+        this.isLoading = false;
+      }, 1500);
     } else {
       // Si le formulaire est invalide, on marque les champs pour afficher les erreurs
       this.loginForm.markAllAsTouched();
