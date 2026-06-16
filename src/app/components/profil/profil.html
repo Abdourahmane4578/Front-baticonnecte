@@ -39,6 +39,7 @@
               </span>
             </div>
             <p class="text-2xl font-bold text-slate-500 mt-2">{{artisan.job}}</p>
+            <p *ngIf="currentUser?.email" class="text-lg font-medium text-slate-400 mt-1">{{currentUser.email}}</p>
             
             <div class="flex flex-wrap items-center justify-center md:justify-start gap-4 md:gap-6 mt-4 md:mt-6">
               <div class="flex items-center gap-2 px-3 py-2 md:px-4 md:py-2 bg-white rounded-xl md:rounded-2xl border border-slate-200 transition-shadow hover:shadow-md cursor-default">
@@ -89,7 +90,7 @@
         </div>
 
         <!-- Portfolio -->
-        <div class="space-y-6">
+        <div class="space-y-6" *ngIf="artisan.images?.length > 0">
           <div class="flex justify-between items-end">
             <h2 class="text-2xl font-black text-slate-800 tracking-tight">Mes dernières réalisations</h2>
             <a class="text-sm font-black text-primary uppercase tracking-widest hover:underline cursor-pointer">Tout voir</a>

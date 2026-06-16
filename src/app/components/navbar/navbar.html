@@ -77,11 +77,11 @@
           <ul tabindex="0" class="mt-4 z-[110] p-3 shadow-2xl dropdown-content bg-white rounded-[28px] w-72 border border-slate-100 animate-in fade-in zoom-in-95 duration-300">
             <div class="px-5 py-4 border-b border-slate-50 mb-3 bg-slate-50/50 rounded-2xl">
               <p class="text-[10px] font-black uppercase text-slate-400 tracking-[0.2em]">Utilisateur</p>
-              <p class="text-sm font-black text-slate-800 mt-1">Moussa Diop</p>
+              <p class="text-sm font-black text-slate-800 mt-1">{{ currentUser?.username || 'Utilisateur' }}</p>
             </div>
             
             <li><a routerLink="/dashboard" class="flex items-center gap-3 p-3.5 hover:bg-slate-50 rounded-xl font-bold text-slate-700 transition-all">📊 Mon Dashboard</a></li>
-            <li><a routerLink="/profil/123" class="flex items-center gap-3 p-3.5 hover:bg-slate-50 rounded-xl font-bold text-slate-700 transition-all">👤 Voir mon profil</a></li>
+            <li><a *ngIf="currentUser" [routerLink]="['/profil', currentUser.id]" class="flex items-center gap-3 p-3.5 hover:bg-slate-50 rounded-xl font-bold text-slate-700 transition-all">👤 Voir mon profil</a></li>
             <li><a routerLink="/parametres" class="flex items-center gap-3 p-3.5 hover:bg-slate-50 rounded-xl font-bold text-slate-700 transition-all">⚙️ Paramètres</a></li>
             
             <div class="divider my-2 opacity-50 px-4"></div>

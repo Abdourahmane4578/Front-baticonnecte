@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute } from '@angular/router';
+import { AuthService } from '../../services/auth';
 
 @Component({
   selector: 'app-profil',
@@ -10,27 +11,41 @@ import { RouterModule, ActivatedRoute } from '@angular/router';
 })
 export class Profil implements OnInit {
   artisanId: string | null = null;
+  currentUser: any = null;
   
-  // Données de test (simulant ce qui viendra de ta base de données Spring Boot plus tard)
-  artisan = {
-    name: 'Moussa Diop',
-    job: 'Plombier Expert',
-    city: 'Conakry, Kaloum',
-    rating: 4.8,
-    reviews: 124,
-    description: 'Expert en installation sanitaire et dépannage rapide. Plus de 10 ans d\'expérience au service des particuliers et des entreprises.',
-    skills: ['Tuyauterie', 'Chauffe-eau', 'Sanitaire', 'Débouchage'],
-    images: [
-      'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=400',
-      'https://images.unsplash.com/photo-1504148455328-c376907d081c?w=400',
-      'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=400'
-    ]
+  artisan: any = {
+    name: 'Chargement...',
+    job: '',
+    city: '',
+    rating: 0,
+    reviews: 0,
+    description: '',
+    skills: [],
+    images: []
   };
 
-  constructor(private route: ActivatedRoute) {}
+  constructor(private route: ActivatedRoute, private authService: AuthService) {}
 
   ngOnInit() {
     // On récupère l'ID dans l'URL (ex: l'id 1 de /profil/1)
     this.artisanId = this.route.snapshot.paramMap.get('id');
+
+    // Récupérer les informations de l'utilisateur connecté
+    this.currentUser = this.authService.getUser();
+    
+    if (this.currentUser) {
+      this.artisan = {
+        name: this.currentUser.username || 'Utilisateur',
+        job: this.currentUser.role === 'ARTISAN' ? 'Artisan' : (this.currentUser.role || 'Client'),
+        city: 'Non renseigné',
+        rating: 0,
+        reviews: 0,
+        description: 'Bienvenue sur votre profil BatiConnect. Vous pourrez bientôt compléter vos informations.',
+        skills: [],
+        images: []
+      };
+    } else {
+      this.artisan.name = 'Visiteur';
+    }
   }
 }
