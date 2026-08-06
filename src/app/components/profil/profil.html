@@ -1,162 +1,171 @@
-<div class="min-h-screen bg-slate-50 relative">
-  
-  <!-- Back Button (Floating) -->
-  <div class="absolute top-6 left-6 z-50">
-    <a routerLink="/" class="btn btn-circle bg-white/80 backdrop-blur-md border-none shadow-lg hover:bg-white">
-      <span class="text-xl">←</span>
-    </a>
-  </div>
+<div class="min-h-screen py-8">
+  <div class="max-w-[1128px] mx-auto px-4 grid grid-cols-1 md:grid-cols-12 gap-6">
 
-  <!-- Cover Header -->
-  <div class="h-[300px] md:h-[400px] w-full relative overflow-hidden bg-slate-100">
-    <img src="https://images.unsplash.com/photo-1541888946425-d81bb19480c5?auto=compress&cs=tinysrgb&w=1600" 
-         class="w-full h-full object-cover">
-    <div class="absolute inset-0 bg-gradient-to-t from-slate-50 via-transparent to-transparent"></div>
-  </div>
-
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 -mt-20 md:-mt-32 relative z-10">
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 md:gap-12">
+    <!-- Colonne principale (8/12) -->
+    <div class="md:col-span-8 space-y-4">
       
-      <!-- Main Content -->
-      <div class="lg:col-span-2 space-y-8 md:space-y-12 pb-12 md:pb-24">
+      <!-- Carte principale : Intro -->
+      <div class="bg-white rounded-lg border border-[#e0dfdc] overflow-hidden relative pb-6">
         
-        <!-- Profile Header Card -->
-        <div class="flex flex-col md:flex-row gap-6 md:gap-8 items-center md:items-end text-center md:text-left">
-          <div class="relative">
-            <div class="w-32 h-32 md:w-48 md:h-48 rounded-[40px] overflow-hidden border-[6px] md:border-[8px] border-white shadow-2xl bg-white">
+        <a routerLink="/" class="absolute top-4 left-4 z-10 w-8 h-8 bg-white/70 backdrop-blur rounded-full flex items-center justify-center hover:bg-white text-[#191919] shadow-sm">←</a>
+
+        <div class="h-[200px] w-full bg-[#e0dfdc]">
+          <img src="https://images.unsplash.com/photo-1541888946425-d81bb19480c5?auto=compress&cs=tinysrgb&w=1600" class="w-full h-full object-cover">
+        </div>
+
+        <div class="px-6 relative">
+          <div class="absolute -top-[100px] left-6">
+            <div class="w-[152px] h-[152px] rounded-full border-4 border-white bg-white overflow-hidden relative">
               <img [src]="'https://api.dicebear.com/8.x/avataaars/svg?seed=' + artisan.name" class="w-full h-full object-cover">
-            </div>
-            <div class="absolute -bottom-2 -right-2 md:-right-2 w-10 h-10 md:w-12 md:h-12 bg-green-500 border-4 border-white rounded-xl md:rounded-2xl flex items-center justify-center text-white text-lg md:text-xl shadow-lg">
-              ✓
+              <div class="absolute bottom-1 right-1 w-8 h-8 bg-green-600 rounded-full border-2 border-white flex items-center justify-center text-white text-sm font-bold shadow-sm">✓</div>
             </div>
           </div>
           
-          <div class="flex-1 pb-2 md:pb-4 flex flex-col items-center md:items-start">
-            <div class="flex flex-wrap items-center justify-center md:justify-start gap-3 md:gap-4">
-              <h1 class="text-3xl md:text-5xl font-black text-slate-800 tracking-tight">{{artisan.name}}</h1>
-              <span class="px-3 py-1 md:px-4 md:py-1.5 bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest rounded-full border border-primary/20">
-                Artisan Certifié
-              </span>
+          <div class="flex justify-end pt-4 pb-2 gap-2">
+            <button routerLink="/messages" class="px-4 py-1.5 border border-[#0a66c2] text-[#0a66c2] font-semibold rounded-full hover:bg-[#e6f0f8] transition-colors text-sm">
+              Message
+            </button>
+            <button (click)="scrollToDevis()" class="px-4 py-1.5 bg-[#0a66c2] text-white font-semibold rounded-full hover:bg-[#004182] transition-colors text-sm">
+              Demander un devis
+            </button>
+          </div>
+
+          <div class="mt-4">
+            <h1 class="text-2xl font-semibold text-[#191919]">{{artisan.name}}</h1>
+            <p class="text-[16px] text-[#191919] mt-1">{{artisan.job}}</p>
+            <div class="flex flex-wrap items-center gap-x-2 gap-y-1 mt-1">
+              <p class="text-[14px] text-[#666666]">📍 {{artisan.city}}, Guinée</p>
+              <span *ngIf="artisan.adresse" class="text-[14px] text-[#666666]">· {{artisan.adresse}}</span>
             </div>
-            <p class="text-2xl font-bold text-slate-500 mt-2">{{artisan.job}}</p>
-            <p *ngIf="currentUser?.email" class="text-lg font-medium text-slate-400 mt-1">{{currentUser.email}}</p>
-            
-            <div class="flex flex-wrap items-center justify-center md:justify-start gap-4 md:gap-6 mt-4 md:mt-6">
-              <div class="flex items-center gap-2 px-3 py-2 md:px-4 md:py-2 bg-white rounded-xl md:rounded-2xl border border-slate-200 transition-shadow hover:shadow-md cursor-default">
-                <span class="text-lg md:text-xl">⭐</span>
-                <span class="font-black text-slate-800">{{artisan.rating}}</span>
-                <span class="text-slate-400 font-bold text-xs md:text-sm">({{artisan.reviews}} avis)</span>
-              </div>
-              <div class="flex items-center gap-2 px-3 py-2 md:px-4 md:py-2 bg-white rounded-xl md:rounded-2xl border border-slate-200 font-bold text-slate-600 transition-shadow hover:shadow-md cursor-default text-sm md:text-base">
-                <span class="text-lg md:text-xl">📍</span>
-                {{artisan.city}}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Quick Stats -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div class="bg-white p-6 rounded-[32px] border border-slate-200 text-center shadow-sm">
-            <p class="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-1">Expérience</p>
-            <p class="text-xl font-black text-slate-800">10+ ans</p>
-          </div>
-          <div class="bg-white p-6 rounded-[32px] border border-slate-200 text-center shadow-sm">
-            <p class="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-1">Projets</p>
-            <p class="text-xl font-black text-slate-800">350+</p>
-          </div>
-          <div class="bg-white p-6 rounded-[32px] border border-slate-200 text-center shadow-sm">
-            <p class="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-1">Réponse</p>
-            <p class="text-xl font-black text-slate-800">&lt; 2h</p>
-          </div>
-          <div class="bg-white p-6 rounded-[32px] border border-slate-200 text-center shadow-sm">
-            <p class="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-1">Garantie</p>
-            <p class="text-xl font-black text-slate-800">1 an</p>
-          </div>
-        </div>
-
-        <!-- About section -->
-        <div class="space-y-6">
-          <h2 class="text-2xl font-black text-slate-800 tracking-tight">À propos de moi</h2>
-          <p class="text-lg text-slate-600 leading-relaxed font-medium">
-            {{artisan.description}}
-          </p>
-          <div class="flex flex-wrap gap-2 pt-2">
-            <span *ngFor="let s of artisan.skills" 
-                  class="px-5 py-2.5 bg-white border border-slate-200 rounded-2xl font-bold text-slate-600 hover:border-primary hover:text-primary transition-all cursor-default">
-              {{s}}
-            </span>
-          </div>
-        </div>
-
-        <!-- Portfolio -->
-        <div class="space-y-6" *ngIf="artisan.images?.length > 0">
-          <div class="flex justify-between items-end">
-            <h2 class="text-2xl font-black text-slate-800 tracking-tight">Mes dernières réalisations</h2>
-            <a class="text-sm font-black text-primary uppercase tracking-widest hover:underline cursor-pointer">Tout voir</a>
-          </div>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div *ngFor="let img of artisan.images" class="group relative aspect-[4/3] overflow-hidden rounded-[32px] shadow-lg">
-              <img [src]="img" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
-              <div class="absolute inset-0 bg-gradient-to-t from-primary/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6">
-                <p class="text-white font-bold text-sm">Voir le projet</p>
-              </div>
+            <p class="text-[14px] text-[#666666] mt-1">✉️ {{artisan.email}}</p>
+            <div class="flex items-center gap-4 mt-3">
+              <span class="text-[14px] font-semibold text-[#0a66c2]">⭐ {{artisan.rating}} ({{artisan.reviews}} avis)</span>
+              <span class="text-[14px] font-semibold text-[#0a66c2]">Membre BatiConnect</span>
             </div>
           </div>
         </div>
-
       </div>
 
-      <!-- Sticky Sidebar -->
-      <div class="lg:col-span-1 mt-4 lg:mt-0">
-        <div class="bg-white rounded-[32px] md:rounded-[40px] p-6 md:p-10 shadow-xl md:shadow-2xl border border-slate-100 lg:sticky lg:top-28 mb-8 md:mb-12 transition-all hover:shadow-2xl">
-          <div class="space-y-6 md:space-y-8">
-            <div class="flex justify-between items-center">
-              <div>
-                <p class="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-1">À partir de</p>
-                <div class="flex items-baseline gap-1">
-                  <span class="text-4xl font-black text-slate-800">15.000</span>
-                  <span class="text-sm font-black text-slate-400 uppercase">GNF</span>
-                </div>
-              </div>
-              <div class="w-14 h-14 bg-white border border-slate-200 rounded-2xl flex items-center justify-center text-2xl shadow-sm">
-                ⚡
-              </div>
+      <!-- Carte : Infos -->
+      <div class="bg-white rounded-lg border border-[#e0dfdc] p-6">
+        <h2 class="text-[20px] font-semibold text-[#191919] mb-4">Infos</h2>
+        <p class="text-[14px] text-[#191919] leading-relaxed">{{artisan.description}}</p>
+        <div class="mt-4" *ngIf="artisan.skills?.length > 0">
+          <h3 class="text-[16px] font-semibold text-[#191919] mb-2">Compétences</h3>
+          <div class="flex flex-wrap gap-2">
+            <span *ngFor="let s of artisan.skills" class="px-3 py-1 bg-white border border-[#e0dfdc] rounded-full text-[14px] font-semibold text-[#191919] hover:bg-gray-50 cursor-pointer">{{s}}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Carte : Aperçu -->
+      <div class="bg-white rounded-lg border border-[#e0dfdc] p-6">
+        <h2 class="text-[20px] font-semibold text-[#191919] mb-4">Aperçu</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div><p class="text-[12px] font-semibold text-[#666666] mb-1">Expérience</p><p class="text-[16px] font-semibold text-[#191919]">10+ ans</p></div>
+          <div><p class="text-[12px] font-semibold text-[#666666] mb-1">Projets</p><p class="text-[16px] font-semibold text-[#191919]">350+</p></div>
+          <div><p class="text-[12px] font-semibold text-[#666666] mb-1">Réponse</p><p class="text-[16px] font-semibold text-[#191919]">&lt; 2h</p></div>
+          <div><p class="text-[12px] font-semibold text-[#666666] mb-1">Garantie</p><p class="text-[16px] font-semibold text-[#191919]">1 an</p></div>
+        </div>
+      </div>
+
+      <!-- Carte : Portfolio -->
+      <div class="bg-white rounded-lg border border-[#e0dfdc] p-6" *ngIf="artisan.images?.length > 0">
+        <h2 class="text-[20px] font-semibold text-[#191919] mb-4">Réalisations</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div *ngFor="let img of artisan.images" class="aspect-[4/3] rounded overflow-hidden border border-[#e0dfdc] group relative cursor-pointer">
+            <img [src]="img" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-[#191919]/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+              <span class="text-white font-semibold text-sm">Agrandir</span>
             </div>
-
-            <div class="space-y-3">
-              <button [routerLink]="['/devis-request', artisanId]" class="btn btn-primary w-full h-14 md:h-16 rounded-xl md:rounded-2xl normal-case text-base md:text-lg font-black shadow-lg shadow-primary/30 hover:shadow-xl hover:scale-[1.02] active:scale-95 transition-all border-none">
-                Demander un devis
-              </button>
-              <button routerLink="/messages" class="btn btn-outline w-full h-14 md:h-16 rounded-xl md:rounded-2xl normal-case text-base md:text-lg font-black border-slate-200 hover:bg-slate-50 hover:text-slate-800 hover:border-slate-300 transition-all">
-                Envoyer un message
-              </button>
-            </div>
-
-            <div class="divider opacity-50"></div>
-
-            <div class="space-y-4">
-              <div class="flex items-center gap-4 group">
-                <div class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center text-primary group-hover:scale-110 transition-transform">🛡️</div>
-                <p class="text-sm font-bold text-slate-600">Paiement 100% sécurisé</p>
-              </div>
-              <div class="flex items-center gap-4 group">
-                <div class="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center text-green-600 group-hover:scale-110 transition-transform">📅</div>
-                <p class="text-sm font-bold text-slate-600">Disponible cette semaine</p>
-              </div>
-              <div class="flex items-center gap-4 group">
-                <div class="w-10 h-10 bg-amber-50 rounded-xl flex items-center justify-center text-amber-600 group-hover:scale-110 transition-transform">⭐</div>
-                <p class="text-sm font-bold text-slate-600">Garantie satisfaction BatiConnect</p>
-              </div>
-            </div>
-
-            <p class="text-center text-[10px] font-black uppercase text-slate-300 tracking-[0.2em] pt-4">
-              Aucun frais caché
-            </p>
           </div>
         </div>
       </div>
 
     </div>
+
+    <!-- Sidebar droite (4/12) — Formulaire de devis -->
+    <div class="md:col-span-4" id="sidebar-devis">
+
+      <!-- Confirmation après envoi -->
+      <div *ngIf="devisSent" class="bg-white rounded-lg border border-green-200 p-6 text-center sticky top-[76px]">
+        <div class="text-5xl mb-3">✅</div>
+        <h3 class="text-[18px] font-bold text-[#191919] mb-2">Devis envoyé !</h3>
+        <p class="text-[14px] text-[#666666] mb-4">
+          Votre demande a bien été transmise à <strong>{{artisan.name}}</strong>. Vous recevrez une réponse prochainement.
+        </p>
+        <a routerLink="/devis" class="inline-block px-5 py-2 bg-[#0a66c2] text-white font-semibold rounded-full hover:bg-[#004182] transition-colors text-sm">
+          Voir mes devis
+        </a>
+        <button (click)="devisSent = false" class="mt-3 block w-full text-[13px] text-[#666666] hover:underline">
+          Faire une autre demande
+        </button>
+      </div>
+
+      <!-- Formulaire de demande -->
+      <div *ngIf="!devisSent" class="bg-white rounded-lg border border-[#e0dfdc] p-6 sticky top-[76px] space-y-4">
+        
+        <div>
+          <h3 class="text-[18px] font-bold text-[#191919]">Demander un devis</h3>
+          <p class="text-[13px] text-[#666666] mt-1">Décrivez votre besoin à <strong>{{artisan.name}}</strong>.</p>
+        </div>
+
+        <hr class="border-[#e0dfdc]">
+
+        <div>
+          <label class="block text-[13px] font-semibold text-[#191919] mb-1">Objet des travaux *</label>
+          <input type="text" [(ngModel)]="devisForm.titre"
+                 placeholder="Ex: Rénovation cuisine, Installation électrique..."
+                 class="w-full px-3 py-2 text-sm border border-[#e0dfdc] rounded-lg outline-none focus:border-[#0a66c2] transition-colors">
+        </div>
+
+        <div>
+          <label class="block text-[13px] font-semibold text-[#191919] mb-1">Décrivez vos travaux *</label>
+          <textarea [(ngModel)]="devisForm.description" rows="4"
+                    placeholder="Surface, matériaux, contraintes particulières..."
+                    class="w-full px-3 py-2 text-sm border border-[#e0dfdc] rounded-lg outline-none focus:border-[#0a66c2] transition-colors resize-none"></textarea>
+        </div>
+
+        <div>
+          <label class="block text-[13px] font-semibold text-[#191919] mb-1">Adresse des travaux</label>
+          <input type="text" [(ngModel)]="devisForm.adresseTravaux"
+                 placeholder="Quartier, Ville"
+                 class="w-full px-3 py-2 text-sm border border-[#e0dfdc] rounded-lg outline-none focus:border-[#0a66c2] transition-colors">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-[13px] font-semibold text-[#191919] mb-1">Date souhaitée</label>
+            <input type="date" [(ngModel)]="devisForm.dateSouhaitee"
+                   class="w-full px-3 py-2 text-sm border border-[#e0dfdc] rounded-lg outline-none focus:border-[#0a66c2] transition-colors">
+          </div>
+          <div>
+            <label class="block text-[13px] font-semibold text-[#191919] mb-1">Budget (GNF)</label>
+            <input type="number" [(ngModel)]="devisForm.montantEstime"
+                   placeholder="0"
+                   class="w-full px-3 py-2 text-sm border border-[#e0dfdc] rounded-lg outline-none focus:border-[#0a66c2] transition-colors">
+          </div>
+        </div>
+
+        <p *ngIf="devisError" class="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+          {{ devisError }}
+        </p>
+
+        <button (click)="envoyerDevis()" id="btn-envoyer-devis"
+                class="w-full py-2.5 bg-[#0a66c2] text-white font-semibold rounded-full hover:bg-[#004182] transition-colors text-[15px]">
+          Envoyer la demande
+        </button>
+
+        <hr class="border-[#e0dfdc]">
+
+        <div class="space-y-3">
+          <div class="flex items-center gap-3"><span class="text-xl">🛡️</span><p class="text-[13px] text-[#191919]">Paiement sécurisé</p></div>
+          <div class="flex items-center gap-3"><span class="text-xl">📅</span><p class="text-[13px] text-[#191919]">Réponse sous 24h</p></div>
+          <div class="flex items-center gap-3"><span class="text-xl">⭐</span><p class="text-[13px] text-[#191919]">Satisfaction garantie</p></div>
+        </div>
+
+      </div>
+    </div>
+
   </div>
 </div>

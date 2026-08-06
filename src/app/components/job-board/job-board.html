@@ -1,99 +1,211 @@
-<div class="min-h-screen bg-slate-50 relative overflow-hidden py-24 px-6">
-  <!-- Decorative background -->
-  <div class="absolute top-0 right-0 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[120px] -z-10"></div>
-  <div class="absolute bottom-0 left-0 w-[600px] h-[600px] bg-blue-500/5 rounded-full blur-[100px] -z-10"></div>
+<div class="min-h-screen py-8">
+  <div class="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-12 gap-6">
 
-  <div class="max-w-7xl mx-auto">
-    <!-- Header -->
-    <div class="text-center max-w-2xl mx-auto mb-16">
-      <div class="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 rounded-lg text-primary text-[10px] font-black uppercase tracking-widest mb-4">
-        Job Board
-      </div>
-      <h1 class="text-4xl md:text-5xl font-black text-slate-800 tracking-tight">Les Annonces Clients</h1>
-      <p class="text-slate-500 font-medium text-lg mt-4">Trouvez de nouveaux chantiers publiés par des particuliers et des entreprises en Guinée.</p>
-    </div>
-    
-    <div class="flex flex-col lg:flex-row gap-8">
-      
-      <!-- Filters Sidebar -->
-      <aside class="lg:w-80 space-y-8">
-        <div class="bg-white p-8 rounded-[32px] border border-slate-100 shadow-sm sticky top-28">
-          <h3 class="text-xl font-black text-slate-800 mb-6">Filtres</h3>
+    <!-- ============================
+      Left Sidebar : Filtres de recherche
+      Sticky pour rester visible au scroll
+    ============================ -->
+    <aside class="md:col-span-3">
+      <div class="bg-white rounded-lg border border-[#e0dfdc] overflow-hidden sticky top-[76px]">
+        <!-- Header style carte LinkedIn -->
+        <div class="relative h-14 bg-[#e0dfdc]"></div>
+        <div class="px-4 pb-4 -mt-6">
+          <div class="w-12 h-12 bg-white rounded-full border-2 border-white flex items-center justify-center text-xl shadow-sm mx-auto mb-2">
+            🔍
+          </div>
+          <h3 class="text-base font-semibold text-[#191919] text-center mb-1">Recherche</h3>
+          <p class="text-[12px] text-[#666666] text-center mb-4">Trouvez de nouveaux chantiers</p>
           
-          <div class="space-y-6">
+          <div class="border-t border-[#e0dfdc] pt-4 space-y-4">
+            <!-- Filtre par métier ou mot-clé -->
             <div class="form-control">
-              <label class="label"><span class="label-text font-bold text-slate-400 uppercase text-[10px] tracking-widest ml-2">Métier ou Mot-clé</span></label>
-              <div class="relative">
-                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">🔍</span>
-                <input type="text" [(ngModel)]="searchMetier" (ngModelChange)="applyFilters()" placeholder="Ex: Peintre" 
-                       class="w-full h-12 pl-10 pr-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-primary/30 focus:ring-4 focus:ring-primary/5 outline-none font-medium text-sm transition-all">
-              </div>
+              <label class="label pb-1"><span class="label-text font-semibold text-[#191919] text-[12px]">Mot-clé</span></label>
+              <input type="text" [(ngModel)]="searchMetier" (ngModelChange)="applyFilters()" placeholder="Ex: Peintre" 
+                     class="w-full h-8 px-3 bg-white border border-[#191919] rounded text-[14px] focus:ring-1 focus:ring-[#0a66c2] focus:border-[#0a66c2] outline-none">
             </div>
 
+            <!-- Filtre par ville -->
             <div class="form-control">
-              <label class="label"><span class="label-text font-bold text-slate-400 uppercase text-[10px] tracking-widest ml-2">Ville</span></label>
-              <div class="relative">
-                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">📍</span>
-                <input type="text" [(ngModel)]="searchVille" (ngModelChange)="applyFilters()" placeholder="Ex: Conakry" 
-                       class="w-full h-12 pl-10 pr-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-primary/30 focus:ring-4 focus:ring-primary/5 outline-none font-medium text-sm transition-all">
-              </div>
+              <label class="label pb-1"><span class="label-text font-semibold text-[#191919] text-[12px]">Ville</span></label>
+              <input type="text" [(ngModel)]="searchVille" (ngModelChange)="applyFilters()" placeholder="Ex: Conakry" 
+                     class="w-full h-8 px-3 bg-white border border-[#191919] rounded text-[14px] focus:ring-1 focus:ring-[#0a66c2] focus:border-[#0a66c2] outline-none">
             </div>
           </div>
         </div>
-      </aside>
+      </div>
+    </aside>
 
-      <!-- Results Grid -->
-      <main class="flex-1">
+    <!-- ============================
+      Zone principale : Feed (Liste des annonces)
+    ============================ -->
+    <main class="md:col-span-6 space-y-4">
+      
+      <!-- État vide : affiché si filteredAnnonces est vide -->
+      <div *ngIf="filteredAnnonces.length === 0" class="bg-white rounded-lg border border-[#e0dfdc] p-8 text-center">
+        <h3 class="text-[16px] font-semibold text-[#191919] mb-1">Aucune annonce trouvée</h3>
+        <p class="text-[14px] text-[#666666]">Modifiez vos critères de recherche pour voir plus de résultats.</p>
+      </div>
+
+      <!-- Carte d'annonce (style LinkedIn Feed) -->
+      <div *ngFor="let annonce of filteredAnnonces" 
+           class="bg-white rounded-lg border border-[#e0dfdc] flex flex-col">
         
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          
-          <!-- Job Card -->
-          <div *ngFor="let annonce of filteredAnnonces" 
-               class="group bg-white rounded-[32px] p-8 border border-slate-100 shadow-sm hover:shadow-2xl transition-all duration-500 hover:-translate-y-1 relative flex flex-col h-full">
-            
-            <div class="flex justify-between items-start mb-4">
-              <div class="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-50 text-slate-500 rounded-lg text-[10px] font-black uppercase tracking-widest">
-                <span>📍</span> {{annonce.ville}}
-              </div>
-              <div [ngClass]="annonce.urgence === 'Urgent' ? 'bg-red-50 text-red-500' : 'bg-primary/10 text-primary'" 
-                   class="px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest">
-                {{annonce.urgence}}
-              </div>
+        <!-- En-tête de la carte : avatar, nom, ville, date et actions -->
+        <div class="p-4 flex items-start justify-between">
+          <div class="flex items-center gap-2">
+            <!-- Avatar cliquable -->
+            <div [routerLink]="['/profil', annonce.authorId]" class="w-12 h-12 rounded-full border border-[#e0dfdc] flex items-center justify-center text-xl cursor-pointer hover:bg-gray-50">
+              👤
             </div>
-
-            <h3 class="text-xl font-black text-slate-800 leading-tight mb-2 group-hover:text-primary transition-colors">{{annonce.titre}}</h3>
-            <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-4">{{annonce.metier}}</p>
-            
-            <p class="text-sm text-slate-500 line-clamp-3 mb-6 flex-1 font-medium leading-relaxed">{{annonce.description}}</p>
-
-            <div class="pt-6 border-t border-slate-50 mt-auto">
-              <div class="flex items-center justify-between mb-6">
-                <div>
-                  <p class="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-1">Budget</p>
-                  <p class="font-black text-slate-800">{{annonce.budget}} <span class="text-[10px] text-slate-400">GNF</span></p>
-                </div>
-                <div class="text-right">
-                  <p class="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-1">Publié</p>
-                  <p class="text-xs font-bold text-slate-600">{{annonce.date}}</p>
-                </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <h4 [routerLink]="['/profil', annonce.authorId]" class="font-semibold text-[14px] text-[#191919] hover:text-[#0a66c2] hover:underline cursor-pointer">{{annonce.client}}</h4>
+                <span class="text-[#666666] text-[12px]">• Membre</span>
               </div>
-              
-              <button routerLink="/messages" class="btn btn-primary w-full rounded-2xl normal-case font-black shadow-lg shadow-primary/20 group-hover:shadow-primary/40 transition-all border-none">
-                Contacter le client
+              <p class="text-[12px] text-[#666666] m-0">{{annonce.ville}}</p>
+              <p class="text-[12px] text-[#666666] m-0 flex items-center gap-1">
+                {{annonce.date}} • 
+                <span class="text-[10px]">🌍</span>
+              </p>
+            </div>
+          </div>
+          
+          <div class="flex items-center gap-2">
+            <!-- Bouton "Contacter" (Se connecter sur LinkedIn) -->
+            <button *ngIf="annonce.client !== 'Moi (Client)'" routerLink="/messages"
+                    class="text-[14px] font-semibold text-[#0a66c2] hover:bg-[#e6f0f8] px-3 py-1 rounded-full transition-colors flex items-center gap-1">
+              <span>+</span> Contacter
+            </button>
+
+            <!-- Actions directes : Modifier / Supprimer (pour l'auteur de l'annonce) -->
+            <div *ngIf="annonce.client === 'Moi (Client)'" class="flex items-center gap-1">
+              <button (click)="startEdit(annonce)" 
+                      class="p-2 rounded-full text-[#666666] hover:text-[#0a66c2] hover:bg-gray-100 transition-colors flex items-center gap-1"
+                      title="Modifier">
+                <span class="text-lg">✏️</span>
+                <span class="hidden sm:inline text-[12px] font-semibold">Modifier</span>
+              </button>
+              <button (click)="deleteAnnonce(annonce.id)" 
+                      class="p-2 rounded-full text-[#666666] hover:text-red-600 hover:bg-red-50 transition-colors flex items-center gap-1"
+                      title="Supprimer">
+                <span class="text-lg">🗑️</span>
+                <span class="hidden sm:inline text-[12px] font-semibold">Supprimer</span>
               </button>
             </div>
-            
           </div>
         </div>
 
-        <!-- Empty State -->
-        <div *ngIf="filteredAnnonces.length === 0" class="py-24 text-center bg-white rounded-[40px] border-2 border-dashed border-slate-100 shadow-sm mt-6">
-          <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6 text-3xl">🔍</div>
-          <h3 class="text-2xl font-black text-slate-800 mb-2">Aucune annonce trouvée</h3>
-          <p class="text-slate-500 font-medium">Modifiez vos critères de recherche.</p>
+        <!-- Corps de la carte : contenu de l'annonce -->
+        <div class="px-4 pb-2">
+          <ng-container *ngIf="editingAnnonceId !== annonce.id">
+            <h3 class="text-[14px] font-semibold text-[#191919] mb-1">
+              {{annonce.titre}}
+              <span *ngIf="annonce.urgence === 'Urgent'" class="text-[#cc1016] text-[12px] font-bold ml-1 uppercase">(Urgent)</span>
+            </h3>
+            <p class="text-[14px] text-[#666666] mb-2 font-medium">Recherche : {{annonce.metier}}</p>
+            <p class="text-[14px] text-[#191919] whitespace-pre-wrap leading-relaxed">{{annonce.description}}</p>
+          </ng-container>
+
+          <div *ngIf="editingAnnonceId === annonce.id" class="flex flex-col gap-2 my-2">
+            <input type="text" [(ngModel)]="editingAnnonceData.titre" placeholder="Titre de l'annonce" class="w-full text-[14px] font-semibold text-[#191919] p-2 border border-[#191919] rounded focus:outline-none focus:ring-1 focus:ring-[#0a66c2]">
+            <textarea [(ngModel)]="editingAnnonceData.description" rows="3" class="w-full text-[14px] text-[#191919] p-2 border border-[#191919] rounded focus:outline-none focus:ring-1 focus:ring-[#0a66c2]"></textarea>
+            <div class="flex gap-2 justify-end">
+              <button (click)="cancelEdit()" class="px-4 py-1 text-[14px] font-semibold text-[#666666] hover:bg-gray-100 rounded-full">Annuler</button>
+              <button (click)="saveEdit()" class="px-4 py-1 text-[14px] font-semibold text-white bg-[#0a66c2] hover:bg-[#004182] rounded-full">Enregistrer</button>
+            </div>
+          </div>
         </div>
-      </main>
-      
-    </div>
+
+        <!-- Barre de stats : compteur de likes et de commentaires -->
+        <div class="px-4 py-2 flex justify-between items-center text-[12px] text-[#666666] border-b border-[#e0dfdc]">
+          <div class="flex items-center gap-1">
+            <span class="bg-[#0a66c2] text-white rounded-full w-4 h-4 flex items-center justify-center text-[10px]">👍</span>
+            <span>{{annonce.likes}}</span>
+          </div>
+          <div class="hover:text-[#0a66c2] hover:underline cursor-pointer" (click)="toggleComments(annonce.id)">
+            {{annonce.comments?.length || 0}} commentaires
+          </div>
+        </div>
+
+        <!-- Barre d'actions sociales -->
+        <div class="px-2 py-1 flex items-center justify-between">
+          <button (click)="toggleLike(annonce.id)" 
+                  [ngClass]="annonce.likedByMe ? 'text-[#0a66c2]' : 'text-[#666666]'"
+                  class="flex-1 flex items-center justify-center gap-1 py-3 rounded-md font-semibold text-[14px] hover:bg-gray-100 transition-colors">
+            <span class="text-lg leading-none" [ngClass]="annonce.likedByMe ? 'fill-[#0a66c2]' : ''">👍</span> 
+            J'aime
+          </button>
+          
+          <button (click)="toggleComments(annonce.id)" 
+                  class="flex-1 flex items-center justify-center gap-1 py-3 rounded-md text-[#666666] font-semibold text-[14px] hover:bg-gray-100 transition-colors">
+            <span class="text-lg leading-none">💬</span> Commenter
+          </button>
+          
+          <button (click)="sharePost(annonce)" 
+                  class="flex-1 flex items-center justify-center gap-1 py-3 rounded-md text-[#666666] font-semibold text-[14px] hover:bg-gray-100 transition-colors">
+            <span class="text-lg leading-none">🔄</span> Republier
+          </button>
+          
+          <button routerLink="/messages" 
+                  class="flex-1 flex items-center justify-center gap-1 py-3 rounded-md text-[#666666] font-semibold text-[14px] hover:bg-gray-100 transition-colors">
+            <span class="text-lg leading-none">✈️</span> Envoyer
+          </button>
+        </div>
+
+        <!-- Section commentaires dépliable -->
+        <div *ngIf="showComments[annonce.id]" class="px-4 pb-4 pt-2">
+          <div class="flex gap-2 mb-4">
+            <div class="w-10 h-10 rounded-full border border-[#e0dfdc] shrink-0 flex items-center justify-center">👤</div>
+            <div class="flex-1">
+              <input type="text" [(ngModel)]="newComment[annonce.id]" (keyup.enter)="addComment(annonce.id)" placeholder="Ajouter un commentaire..." 
+                     class="w-full h-10 px-4 bg-white border border-[#666666] rounded-full focus:border-[#191919] focus:ring-1 focus:ring-[#191919] outline-none text-[14px]">
+              <button *ngIf="newComment[annonce.id]" (click)="addComment(annonce.id)" class="mt-2 px-3 py-1 bg-[#0a66c2] text-white text-[14px] font-semibold rounded-full hover:bg-[#004182]">
+                Publier
+              </button>
+            </div>
+          </div>
+
+          <div class="space-y-4 max-h-60 overflow-y-auto">
+            <div *ngFor="let comment of annonce.comments" class="flex gap-2">
+              <div class="w-10 h-10 rounded-full border border-[#e0dfdc] shrink-0 flex items-center justify-center">👤</div>
+              <div class="flex-1">
+                <div class="bg-[#f3f2ef] rounded-lg rounded-tl-none p-3">
+                  <p class="text-[14px] font-semibold text-[#191919]">{{comment.author}}</p>
+                  <p class="text-[14px] text-[#191919] mt-1">{{comment.text}}</p>
+                </div>
+                <div class="flex gap-3 mt-1 ml-2 text-[12px] font-semibold text-[#666666]">
+                  <button class="hover:bg-gray-100 px-1 rounded">J'aime</button>
+                  <button (click)="replyToComment(annonce.id, comment.author)" class="hover:bg-gray-100 px-1 rounded">Répondre</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- ============================
+      Right Sidebar : Actualités / Recommandations
+    ============================ -->
+    <aside class="hidden md:block md:col-span-3">
+      <div class="bg-white rounded-lg border border-[#e0dfdc] p-4 sticky top-[76px]">
+        <h3 class="text-[16px] font-semibold text-[#191919] mb-4">Actualités BatiConnect</h3>
+        <ul class="space-y-4">
+          <li class="cursor-pointer group">
+            <p class="text-[14px] font-semibold text-[#191919] group-hover:text-[#0a66c2] group-hover:underline">Comment bien choisir son peintre ?</p>
+            <p class="text-[12px] text-[#666666]">Il y a 2j • 1,234 lecteurs</p>
+          </li>
+          <li class="cursor-pointer group">
+            <p class="text-[14px] font-semibold text-[#191919] group-hover:text-[#0a66c2] group-hover:underline">Top 10 des artisans à Conakry</p>
+            <p class="text-[12px] text-[#666666]">Il y a 5j • 890 lecteurs</p>
+          </li>
+          <li class="cursor-pointer group">
+            <p class="text-[14px] font-semibold text-[#191919] group-hover:text-[#0a66c2] group-hover:underline">Éviter les arnaques de chantier</p>
+            <p class="text-[12px] text-[#666666]">Il y a 1 sem • 3,450 lecteurs</p>
+          </li>
+        </ul>
+      </div>
+    </aside>
+
   </div>
 </div>

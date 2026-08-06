@@ -39,11 +39,14 @@ export class AuthService {
           if (isPlatformBrowser(this.platformId)) {
             localStorage.setItem('token', response.token);
             // Sauvegarde des informations de l'utilisateur
+            // Le backend renvoie nomComplet, ville, adresse (voir swagger RegisterUserDto / UserEntity)
             localStorage.setItem('user', JSON.stringify({
               id: response.id,
-              username: response.username,
+              username: response.nomComplet || response.username || 'Utilisateur',
               email: response.email,
-              role: response.role
+              role: response.role,
+              ville: response.ville || '',
+              adresse: response.adresse || ''
             }));
           }
           this.loggedIn.next(true);

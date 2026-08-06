@@ -33,7 +33,8 @@ export class Ouvriers implements OnInit {
     this.filteredArtisans = this.artisans.filter(a => {
       const matchJob = a.job.toLowerCase().includes(this.searchJob.toLowerCase());
       const matchCity = a.city.toLowerCase().includes(this.searchCity.toLowerCase());
-      return matchJob && matchCity;
+      const isActive = a.isActive !== false;
+      return matchJob && matchCity && isActive;
     });
   }
 }

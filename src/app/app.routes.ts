@@ -35,12 +35,6 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadComponent: () => import('./components/dashboard/dashboard').then((m) => m.Dashboard),
   },
-  {
-    path: 'devis-request/:id',
-    title: 'Demande de devis',
-    canActivate: [authGuard],
-    loadComponent: () => import('./components/devis-request/devis-request').then((m) => m.DevisRequest),
-  },
 
   {
     path: 'messages',
@@ -64,6 +58,13 @@ export const routes: Routes = [
     title: 'Paramètres',
     canActivate: [authGuard],
     loadComponent: () => import('./components/parametres/parametres').then((m) => m.Parametres),
+  },
+
+  {
+    path: 'devis',
+    title: 'Mes Devis',
+    canActivate: [authGuard],
+    loadComponent: () => import('./components/devis/devis').then((m) => m.DevisComponent),
   },
 
   {

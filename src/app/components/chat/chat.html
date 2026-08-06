@@ -70,18 +70,46 @@
           <div class="bg-slate-100 px-3 py-1 rounded text-xs font-medium text-slate-600">Aujourd'hui</div>
         </div>
 
-        <div *ngFor="let msg of messages" class="flex w-full" [ngClass]="msg.isMe ? 'justify-end' : 'justify-start'">
+        <div *ngFor="let msg of messages" class="flex w-full group" [ngClass]="msg.sender === 'me' ? 'justify-end' : 'justify-start'">
 
-          <div *ngIf="!msg.isMe" class="shrink-0 mr-3 mt-auto">
+          <div *ngIf="msg.sender !== 'me'" class="shrink-0 mr-3 mt-auto">
             <img [src]="'https://api.dicebear.com/8.x/avataaars/svg?seed=' + activeContact.avatar"
               class="w-8 h-8 rounded-full bg-slate-200">
           </div>
 
-          <div class="flex flex-col max-w-[70%]" [ngClass]="msg.isMe ? 'items-end' : 'items-start'">
+          <div class="flex flex-col max-w-[70%]" [ngClass]="msg.sender === 'me' ? 'items-end' : 'items-start'">
+            
+            <!-- Context Menu (Hover) -->
+            <div class="flex gap-2 mb-1 opacity-0 group-hover:opacity-100 transition-opacity" [ngClass]="msg.sender === 'me' ? 'justify-end' : 'justify-start'">
+              <button (click)="startReply(msg)" class="text-[10px] text-slate-500 hover:text-primary bg-white rounded-md px-2 py-0.5 shadow-sm border border-slate-100">Répondre</button>
+              <button *ngIf="msg.sender === 'me'" (click)="startEdit(msg)" class="text-[10px] text-slate-500 hover:text-primary bg-white rounded-md px-2 py-0.5 shadow-sm border border-slate-100">Modifier</button>
+              <button *ngIf="msg.sender === 'me'" (click)="deleteMessage(msg.id)" class="text-[10px] text-red-400 hover:text-red-600 bg-white rounded-md px-2 py-0.5 shadow-sm border border-slate-100">Supprimer</button>
+            </div>
+
             <div
-              [ngClass]="msg.isMe ? 'bg-primary text-white rounded-t-xl rounded-bl-xl' : 'bg-slate-100 text-slate-800 rounded-t-xl rounded-br-xl'"
-              class="p-3 px-4 text-sm font-medium leading-relaxed shadow-sm">
-              {{msg.text}}
+              [ngClass]="msg.sender === 'me' ? 'bg-primary text-white rounded-t-xl rounded-bl-xl' : 'bg-slate-100 text-slate-800 rounded-t-xl rounded-br-xl'"
+              class="p-3 px-4 text-sm font-medium leading-relaxed shadow-sm relative min-w-[120px]">
+              
+              <!-- Reply box inside message -->
+              <div *ngIf="msg.replyTo" class="mb-2 p-2 rounded bg-black/10 border-l-4" [ngClass]="msg.sender === 'me' ? 'border-white' : 'border-primary'">
+                <p class="text-[10px] font-black opacity-70 mb-0.5">{{msg.replyTo.sender === 'me' ? 'Vous' : activeContact.name}}</p>
+                <p class="text-xs truncate opacity-90">{{msg.replyTo.text}}</p>
+              </div>
+
+              <!-- Message View Mode -->
+              <ng-container *ngIf="editingMessageId !== msg.id">
+                {{msg.text}}
+              </ng-container>
+
+              <!-- Message Edit Mode -->
+              <div *ngIf="editingMessageId === msg.id" class="flex flex-col gap-2">
+                <textarea [(ngModel)]="editingMessageText" class="w-full text-slate-800 p-2 rounded bg-white border-none outline-none text-sm"></textarea>
+                <div class="flex gap-2 justify-end">
+                  <button (click)="cancelEdit()" class="text-[10px] bg-slate-200 text-slate-700 px-2 py-1 rounded">Annuler</button>
+                  <button (click)="saveEdit()" class="text-[10px] bg-white text-primary px-2 py-1 rounded font-bold">Enregistrer</button>
+                </div>
+              </div>
+
             </div>
             <span class="text-[11px] text-slate-400 mt-1 font-medium px-1">{{msg.time}}</span>
           </div>
@@ -90,9 +118,19 @@
       </div>
 
       <!-- Input Area -->
-      <div class="p-4 bg-white border-t border-slate-200 shrink-0">
+      <div class="p-4 bg-white border-t border-slate-200 shrink-0 flex flex-col">
+        <!-- Reply Preview -->
+        <div *ngIf="replyingToMessage" class="flex items-center justify-between bg-slate-100 p-2 px-4 rounded-t-xl border-l-4 border-primary text-sm mb-1">
+          <div>
+            <span class="text-[10px] font-black text-primary uppercase">Réponse à {{replyingToMessage.sender === 'me' ? 'Vous' : activeContact.name}}</span>
+            <p class="text-slate-600 truncate max-w-md">{{replyingToMessage.text}}</p>
+          </div>
+          <button (click)="cancelReply()" class="text-slate-400 hover:text-slate-600">✕</button>
+        </div>
+
         <div
-          class="flex items-end gap-2 bg-[#f3f2ef] rounded-xl p-2 border border-slate-200 focus-within:border-primary/50 focus-within:bg-white transition-all">
+          class="flex items-end gap-2 bg-[#f3f2ef] rounded-xl p-2 border border-slate-200 focus-within:border-primary/50 focus-within:bg-white transition-all"
+          [ngClass]="{'rounded-tl-none': replyingToMessage}">
           <button
             class="w-10 h-10 flex shrink-0 items-center justify-center text-slate-500 hover:text-slate-800 rounded-full hover:bg-slate-200/50 transition-colors">
             📎

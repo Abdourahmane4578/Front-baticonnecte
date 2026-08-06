@@ -1,0 +1,291 @@
+<div class="min-h-screen bg-[#f3f2ef] py-6">
+  <div class="max-w-[1128px] mx-auto px-4 space-y-5">
+
+    <!-- ══════════════════════════════════════════════════════════
+      En-tête de page
+    ══════════════════════════════════════════════════════════ -->
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="text-2xl font-bold text-[#191919]">Mes Devis</h1>
+        <p class="text-sm text-[#666666] mt-0.5">Gérez toutes vos demandes de devis en un seul endroit</p>
+      </div>
+      <button (click)="ouvrirCreation()"
+              id="btn-creer-devis"
+              class="flex items-center gap-2 px-5 py-2 bg-[#0a66c2] text-white font-semibold rounded-full hover:bg-[#004182] transition-colors shadow-sm">
+        <span class="text-lg leading-none">+</span>
+        Créer un devis
+      </button>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════
+      Statistiques — 4 KPI cards
+    ══════════════════════════════════════════════════════════ -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+
+      <!-- Total -->
+      <div class="bg-white rounded-lg border border-[#e0dfdc] p-5">
+        <p class="text-[12px] font-semibold text-[#666666] uppercase tracking-wide mb-1">Total devis</p>
+        <p class="text-3xl font-bold text-[#191919]">{{ stats.total }}</p>
+        <p class="text-[12px] text-[#666666] mt-1">{{ formatMontant(stats.montantTotal) }}</p>
+      </div>
+
+      <!-- En attente -->
+      <div class="bg-white rounded-lg border border-amber-200 p-5">
+        <p class="text-[12px] font-semibold text-amber-600 uppercase tracking-wide mb-1">En attente</p>
+        <p class="text-3xl font-bold text-amber-600">{{ stats.enAttente }}</p>
+        <p class="text-[12px] text-[#666666] mt-1">À traiter</p>
+      </div>
+
+      <!-- Acceptés -->
+      <div class="bg-white rounded-lg border border-green-200 p-5">
+        <p class="text-[12px] font-semibold text-green-600 uppercase tracking-wide mb-1">Acceptés</p>
+        <p class="text-3xl font-bold text-green-600">{{ stats.acceptes }}</p>
+        <p class="text-[12px] text-[#666666] mt-1">{{ stats.termines }} terminés</p>
+      </div>
+
+      <!-- CA estimé accepté -->
+      <div class="bg-white rounded-lg border border-[#0a66c2]/20 p-5">
+        <p class="text-[12px] font-semibold text-[#0a66c2] uppercase tracking-wide mb-1">CA accepté</p>
+        <p class="text-xl font-bold text-[#0a66c2] leading-tight mt-1">{{ formatMontant(stats.montantAccepte) }}</p>
+        <p class="text-[12px] text-[#666666] mt-1">{{ stats.refuses }} refusés</p>
+      </div>
+
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════
+      Filtres + Recherche
+    ══════════════════════════════════════════════════════════ -->
+    <div class="bg-white rounded-lg border border-[#e0dfdc] px-4 py-3 flex flex-wrap items-center gap-3">
+
+      <!-- Filtres par statut -->
+      <div class="flex items-center gap-1 flex-wrap">
+        <button *ngFor="let f of [
+          { key: 'TOUS', label: 'Tous' },
+          { key: 'EN_ATTENTE', label: 'En attente' },
+          { key: 'ACCEPTE', label: 'Acceptés' },
+          { key: 'REFUSE', label: 'Refusés' },
+          { key: 'TERMINE', label: 'Terminés' }
+        ]"
+          (click)="setFiltre(f.key)"
+          [class]="filtreStatut === f.key
+            ? 'px-3 py-1 rounded-full text-[13px] font-semibold bg-[#0a66c2] text-white'
+            : 'px-3 py-1 rounded-full text-[13px] font-semibold text-[#666666] hover:bg-gray-100 transition-colors'">
+          {{ f.label }}
+        </button>
+      </div>
+
+      <!-- Séparateur -->
+      <div class="hidden md:block w-px h-5 bg-[#e0dfdc] mx-1"></div>
+
+      <!-- Recherche -->
+      <input type="text"
+             [(ngModel)]="filtreRecherche"
+             (ngModelChange)="onSearch()"
+             placeholder="Rechercher (client, titre, métier...)"
+             class="flex-1 min-w-[180px] px-3 py-1.5 text-sm border border-[#e0dfdc] rounded-full outline-none focus:border-[#0a66c2] transition-colors">
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════
+      Liste des devis
+    ══════════════════════════════════════════════════════════ -->
+
+    <!-- État vide -->
+    <div *ngIf="filteredDevis.length === 0"
+         class="bg-white rounded-lg border border-[#e0dfdc] py-16 text-center">
+      <p class="text-4xl mb-3">📋</p>
+      <p class="text-[#191919] font-semibold">Aucun devis trouvé</p>
+      <p class="text-[#666666] text-sm mt-1">Modifiez vos filtres ou créez un nouveau devis.</p>
+      <button (click)="ouvrirCreation()"
+              class="mt-4 px-5 py-2 bg-[#0a66c2] text-white font-semibold rounded-full hover:bg-[#004182] transition-colors">
+        Créer un devis
+      </button>
+    </div>
+
+    <!-- Cards de devis -->
+    <div *ngFor="let d of filteredDevis" class="bg-white rounded-lg border border-[#e0dfdc] p-5 hover:shadow-md transition-shadow">
+      <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+
+        <!-- Info principale -->
+        <div class="flex-1 min-w-0">
+          <div class="flex flex-wrap items-center gap-2 mb-1">
+            <span [class]="'px-2 py-0.5 rounded-full text-[12px] font-semibold ' + statutClass(d.statut)">
+              {{ statutLabel(d.statut) }}
+            </span>
+            <span class="text-[12px] text-[#666666]">{{ d.metier }}</span>
+            <span class="text-[12px] text-[#666666]">· {{ d.dateCreation }}</span>
+          </div>
+
+          <h2 class="text-[16px] font-semibold text-[#191919] truncate">{{ d.titre }}</h2>
+          <p class="text-[13px] text-[#666666] mt-0.5 line-clamp-2">{{ d.description }}</p>
+
+          <div class="flex flex-wrap gap-x-5 gap-y-1 mt-3 text-[13px] text-[#666666]">
+            <span>👤 <strong class="text-[#191919]">{{ d.clientNom }}</strong></span>
+            <span>🔨 {{ d.artisanNom }}</span>
+            <span>📍 {{ d.adresseTravaux }}</span>
+            <span>📅 Souhaité le {{ d.dateSouhaitee }}</span>
+          </div>
+        </div>
+
+        <!-- Montant + Actions -->
+        <div class="flex flex-col items-end gap-3 shrink-0">
+          <div class="text-right">
+            <p class="text-[12px] text-[#666666]">Montant estimé</p>
+            <p class="text-[18px] font-bold text-[#191919]">{{ formatMontant(d.montantEstime) }}</p>
+          </div>
+
+          <!-- Actions selon statut -->
+          <div class="flex flex-wrap gap-2 justify-end">
+
+            <!-- EN_ATTENTE : Valider / Refuser -->
+            <ng-container *ngIf="d.statut === 'EN_ATTENTE'">
+              <button (click)="valider(d.id)"
+                      class="px-3 py-1 text-[13px] font-semibold text-green-700 border border-green-300 rounded-full hover:bg-green-50 transition-colors">
+                ✓ Valider
+              </button>
+              <button (click)="refuser(d.id)"
+                      class="px-3 py-1 text-[13px] font-semibold text-red-600 border border-red-200 rounded-full hover:bg-red-50 transition-colors">
+                ✕ Refuser
+              </button>
+            </ng-container>
+
+            <!-- ACCEPTE : Terminer -->
+            <ng-container *ngIf="d.statut === 'ACCEPTE'">
+              <button (click)="terminer(d.id)"
+                      class="px-3 py-1 text-[13px] font-semibold text-blue-700 border border-blue-200 rounded-full hover:bg-blue-50 transition-colors">
+                🏁 Terminer
+              </button>
+            </ng-container>
+
+            <!-- Modifier (toujours dispo sauf si terminé) -->
+            <button *ngIf="d.statut !== 'TERMINE'"
+                    (click)="ouvrirModification(d)"
+                    class="px-3 py-1 text-[13px] font-semibold text-[#666666] border border-[#e0dfdc] rounded-full hover:bg-gray-100 transition-colors">
+              ✏️ Modifier
+            </button>
+
+            <!-- Supprimer -->
+            <button (click)="supprimer(d.id)"
+                    class="px-3 py-1 text-[13px] font-semibold text-red-500 border border-red-100 rounded-full hover:bg-red-50 transition-colors">
+              🗑️
+            </button>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Notes -->
+      <div *ngIf="d.notes" class="mt-3 pt-3 border-t border-[#e0dfdc]">
+        <p class="text-[12px] text-[#666666]"><span class="font-semibold">Notes :</span> {{ d.notes }}</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+  Modal — Créer / Modifier un devis
+══════════════════════════════════════════════════════════ -->
+<div *ngIf="showModal"
+     class="fixed inset-0 bg-black/50 z-[200] flex items-center justify-center p-4"
+     (click)="fermerModal()">
+  <div class="bg-white rounded-lg border border-[#e0dfdc] w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl"
+       (click)="$event.stopPropagation()">
+
+    <!-- Header modal -->
+    <div class="flex items-center justify-between px-6 py-4 border-b border-[#e0dfdc]">
+      <h2 class="text-[18px] font-bold text-[#191919]">
+        {{ isEditing ? 'Modifier le devis' : 'Créer un nouveau devis' }}
+      </h2>
+      <button (click)="fermerModal()" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-[#666666] text-xl">✕</button>
+    </div>
+
+    <!-- Corps du formulaire -->
+    <div class="px-6 py-5 space-y-4">
+
+      <!-- Titre -->
+      <div>
+        <label class="block text-[13px] font-semibold text-[#191919] mb-1">Titre du devis *</label>
+        <input type="text" [(ngModel)]="form.titre" placeholder="Ex: Rénovation salle de bain"
+               class="w-full px-3 py-2 text-sm border border-[#e0dfdc] rounded-lg outline-none focus:border-[#0a66c2] transition-colors">
+      </div>
+
+      <!-- Description -->
+      <div>
+        <label class="block text-[13px] font-semibold text-[#191919] mb-1">Description des travaux *</label>
+        <textarea [(ngModel)]="form.description" rows="3" placeholder="Détaillez les travaux à effectuer..."
+                  class="w-full px-3 py-2 text-sm border border-[#e0dfdc] rounded-lg outline-none focus:border-[#0a66c2] transition-colors resize-none"></textarea>
+      </div>
+
+      <!-- Ligne : Client nom + email -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-[13px] font-semibold text-[#191919] mb-1">Nom du client *</label>
+          <input type="text" [(ngModel)]="form.clientNom" placeholder="Mamadou Diallo"
+                 class="w-full px-3 py-2 text-sm border border-[#e0dfdc] rounded-lg outline-none focus:border-[#0a66c2] transition-colors">
+        </div>
+        <div>
+          <label class="block text-[13px] font-semibold text-[#191919] mb-1">Email du client</label>
+          <input type="email" [(ngModel)]="form.clientEmail" placeholder="client@email.com"
+                 class="w-full px-3 py-2 text-sm border border-[#e0dfdc] rounded-lg outline-none focus:border-[#0a66c2] transition-colors">
+        </div>
+      </div>
+
+      <!-- Ligne : Artisan + Métier -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-[13px] font-semibold text-[#191919] mb-1">Nom de l'artisan</label>
+          <input type="text" [(ngModel)]="form.artisanNom" placeholder="Ibrahima Bah"
+                 class="w-full px-3 py-2 text-sm border border-[#e0dfdc] rounded-lg outline-none focus:border-[#0a66c2] transition-colors">
+        </div>
+        <div>
+          <label class="block text-[13px] font-semibold text-[#191919] mb-1">Métier concerné</label>
+          <input type="text" [(ngModel)]="form.metier" placeholder="Électricien, Plombier..."
+                 class="w-full px-3 py-2 text-sm border border-[#e0dfdc] rounded-lg outline-none focus:border-[#0a66c2] transition-colors">
+        </div>
+      </div>
+
+      <!-- Ligne : Montant + Adresse -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-[13px] font-semibold text-[#191919] mb-1">Montant estimé (GNF) *</label>
+          <input type="number" [(ngModel)]="form.montantEstime" placeholder="1500000"
+                 class="w-full px-3 py-2 text-sm border border-[#e0dfdc] rounded-lg outline-none focus:border-[#0a66c2] transition-colors">
+        </div>
+        <div>
+          <label class="block text-[13px] font-semibold text-[#191919] mb-1">Date souhaitée</label>
+          <input type="date" [(ngModel)]="form.dateSouhaitee"
+                 class="w-full px-3 py-2 text-sm border border-[#e0dfdc] rounded-lg outline-none focus:border-[#0a66c2] transition-colors">
+        </div>
+      </div>
+
+      <!-- Adresse -->
+      <div>
+        <label class="block text-[13px] font-semibold text-[#191919] mb-1">Adresse des travaux</label>
+        <input type="text" [(ngModel)]="form.adresseTravaux" placeholder="Quartier, Ville"
+               class="w-full px-3 py-2 text-sm border border-[#e0dfdc] rounded-lg outline-none focus:border-[#0a66c2] transition-colors">
+      </div>
+
+      <!-- Notes -->
+      <div>
+        <label class="block text-[13px] font-semibold text-[#191919] mb-1">Notes internes</label>
+        <textarea [(ngModel)]="form.notes" rows="2" placeholder="Informations supplémentaires..."
+                  class="w-full px-3 py-2 text-sm border border-[#e0dfdc] rounded-lg outline-none focus:border-[#0a66c2] transition-colors resize-none"></textarea>
+      </div>
+
+    </div>
+
+    <!-- Footer modal -->
+    <div class="flex justify-end gap-3 px-6 py-4 border-t border-[#e0dfdc]">
+      <button (click)="fermerModal()"
+              class="px-5 py-2 text-sm font-semibold text-[#666666] border border-[#e0dfdc] rounded-full hover:bg-gray-100 transition-colors">
+        Annuler
+      </button>
+      <button (click)="sauvegarder()"
+              id="btn-sauvegarder-devis"
+              class="px-5 py-2 text-sm font-semibold text-white bg-[#0a66c2] rounded-full hover:bg-[#004182] transition-colors">
+        {{ isEditing ? 'Enregistrer' : 'Créer le devis' }}
+      </button>
+    </div>
+
+  </div>
+</div>

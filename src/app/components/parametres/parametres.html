@@ -1,6 +1,15 @@
+<!-- ===================================================
+  Template : Paramètres
+  Interface de gestion du compte utilisateur avec navigation par onglets.
+  Structure :
+  - En-tête avec titre de la page
+  - Navigation latérale (Profil | Notifications | Sécurité | Déconnexion)
+  - Zone de contenu dynamique selon l'onglet actif
+=================================================== -->
 <div class="min-h-screen bg-slate-50 py-20 px-6">
   <div class="max-w-5xl mx-auto">
     
+    <!-- En-tête de la page -->
     <div class="mb-12">
       <h1 class="text-4xl font-black text-slate-800 tracking-tight">Paramètres</h1>
       <p class="text-slate-500 font-medium mt-2">Gérez votre profil, vos notifications et la sécurité de votre compte.</p>
@@ -8,24 +17,31 @@
 
     <div class="flex flex-col md:flex-row gap-12">
       
-      <!-- Tabs Navigation -->
+      <!-- ============================
+        Navigation latérale par onglets
+        (click) met à jour activeTab pour afficher le bon panneau
+      ============================ -->
       <nav class="md:w-64 space-y-2">
+        <!-- Onglet Profil -->
         <button (click)="activeTab = 'profil'" 
                 [ngClass]="activeTab === 'profil' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'hover:bg-white text-slate-500'"
                 class="w-full flex items-center gap-4 px-6 py-4 rounded-2xl font-black text-sm transition-all duration-300">
           <span class="text-lg">👤</span> Mon Profil
         </button>
+        <!-- Onglet Notifications -->
         <button (click)="activeTab = 'notifications'" 
                 [ngClass]="activeTab === 'notifications' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'hover:bg-white text-slate-500'"
                 class="w-full flex items-center gap-4 px-6 py-4 rounded-2xl font-black text-sm transition-all duration-300">
           <span class="text-lg">🔔</span> Notifications
         </button>
+        <!-- Onglet Sécurité -->
         <button (click)="activeTab = 'securite'" 
                 [ngClass]="activeTab === 'securite' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'hover:bg-white text-slate-500'"
                 class="w-full flex items-center gap-4 px-6 py-4 rounded-2xl font-black text-sm transition-all duration-300">
           <span class="text-lg">🔒</span> Sécurité
         </button>
         
+        <!-- Séparateur + bouton de déconnexion -->
         <div class="pt-8 border-t border-slate-200 mt-8">
           <button class="w-full flex items-center gap-4 px-6 py-4 rounded-2xl font-black text-sm text-red-500 hover:bg-red-50 transition-all">
             <span class="text-lg">🚪</span> Déconnexion
@@ -33,16 +49,25 @@
         </div>
       </nav>
 
-      <!-- Content Area -->
+      <!-- ============================
+        Zone de contenu : panneau affiché selon activeTab
+      ============================ -->
       <main class="flex-1">
         
-        <!-- Tab: Profil -->
+        <!-- ——————————————————————————
+          Panneau : Profil
+          Permet de modifier photo, visibilité et infos personnelles
+        —————————————————————————— -->
         <div *ngIf="activeTab === 'profil'" class="bg-white rounded-[40px] p-10 shadow-sm border border-slate-100 animate-in fade-in slide-in-from-bottom-4 duration-500">
+          
+          <!-- Section photo de profil -->
           <div class="flex flex-col md:flex-row items-center gap-10 mb-12">
             <div class="relative group">
               <div class="w-32 h-32 rounded-[32px] overflow-hidden border-4 border-slate-50 shadow-inner">
+                <!-- Avatar généré par DiceBear selon le nom de l'utilisateur -->
                 <img src="https://api.dicebear.com/8.x/avataaars/svg?seed=Moussa" class="w-full h-full">
               </div>
+              <!-- Bouton flottant pour changer la photo -->
               <button class="absolute -bottom-2 -right-2 w-10 h-10 bg-white text-slate-800 rounded-xl border-4 border-white shadow-lg flex items-center justify-center hover:bg-slate-50 transition-colors">
                 📷
               </button>
@@ -57,12 +82,25 @@
             </div>
           </div>
 
+          <!-- Toggle de visibilité du profil dans les résultats de recherche -->
+          <div class="flex items-center justify-between p-6 bg-slate-50 rounded-3xl border border-slate-100 mb-8">
+            <div>
+              <p class="font-black text-slate-800">Profil Actif (Visible)</p>
+              <p class="text-xs text-slate-500 font-medium mt-1">Désactivez pour ne plus apparaître dans la liste des ouvriers.</p>
+            </div>
+            <!-- Lié à user.isActive via ngModel -->
+            <input type="checkbox" class="toggle toggle-primary" [(ngModel)]="user.isActive">
+          </div>
+
+          <!-- Formulaire de modification des informations personnelles -->
           <form (ngSubmit)="saveChanges()" class="space-y-8">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <!-- Champ Nom complet -->
               <div class="form-control">
                 <label class="label"><span class="label-text font-black text-slate-400 uppercase text-[10px] tracking-widest ml-2">Nom complet</span></label>
                 <input type="text" [(ngModel)]="user.name" name="name" class="input input-bordered w-full h-14 rounded-2xl bg-slate-50 focus:input-primary transition-all border-slate-100 font-bold">
               </div>
+              <!-- Champ Email -->
               <div class="form-control">
                 <label class="label"><span class="label-text font-black text-slate-400 uppercase text-[10px] tracking-widest ml-2">Email</span></label>
                 <input type="email" [(ngModel)]="user.email" name="email" class="input input-bordered w-full h-14 rounded-2xl bg-slate-50 focus:input-primary transition-all border-slate-100 font-bold">
@@ -70,10 +108,12 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <!-- Champ Téléphone -->
               <div class="form-control">
                 <label class="label"><span class="label-text font-black text-slate-400 uppercase text-[10px] tracking-widest ml-2">Téléphone</span></label>
                 <input type="text" [(ngModel)]="user.phone" name="phone" class="input input-bordered w-full h-14 rounded-2xl bg-slate-50 focus:input-primary transition-all border-slate-100 font-bold">
               </div>
+              <!-- Champ Ville (liste déroulante) -->
               <div class="form-control">
                 <label class="label"><span class="label-text font-black text-slate-400 uppercase text-[10px] tracking-widest ml-2">Ville</span></label>
                 <select [(ngModel)]="user.city" name="city" class="select select-bordered w-full h-14 rounded-2xl bg-slate-50 focus:select-primary transition-all border-slate-100 font-bold">
@@ -85,11 +125,13 @@
               </div>
             </div>
 
+            <!-- Champ Bio / Description -->
             <div class="form-control">
               <label class="label"><span class="label-text font-black text-slate-400 uppercase text-[10px] tracking-widest ml-2">Bio</span></label>
               <textarea [(ngModel)]="user.bio" name="bio" rows="4" class="textarea textarea-bordered w-full p-6 rounded-3xl bg-slate-50 focus:textarea-primary transition-all border-slate-100 font-bold"></textarea>
             </div>
 
+            <!-- Bouton de soumission du formulaire -->
             <div class="pt-8 border-t border-slate-50">
               <button type="submit" class="btn btn-primary h-16 px-12 rounded-2xl text-white normal-case text-lg font-black shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all border-none">
                 Enregistrer les modifications
@@ -98,17 +140,22 @@
           </form>
         </div>
 
-        <!-- Tab: Notifications -->
+        <!-- ——————————————————————————
+          Panneau : Notifications
+          Toggles pour les préférences de notification
+        —————————————————————————— -->
         <div *ngIf="activeTab === 'notifications'" class="bg-white rounded-[40px] p-10 shadow-sm border border-slate-100 animate-in fade-in slide-in-from-bottom-4 duration-500">
           <h3 class="text-2xl font-black text-slate-800 mb-8">Préférences de notification</h3>
           <div class="space-y-6">
+            <!-- Toggle : Notifications par Email -->
             <div class="flex items-center justify-between p-6 bg-slate-50 rounded-3xl border border-slate-100">
               <div>
                 <p class="font-black text-slate-800">Notifications par Email</p>
-                <p class="text-xs text-slate-500 font-medium mt-1">Recevez vos nouveaux messages et devis par mail.</p>
+                <p class="text-xs text-slate-500 font-medium mt-1">Recevez vos nouveaux messages par mail.</p>
               </div>
               <input type="checkbox" class="toggle toggle-primary" [(ngModel)]="user.notifications.email">
             </div>
+            <!-- Toggle : Notifications SMS -->
             <div class="flex items-center justify-between p-6 bg-slate-50 rounded-3xl border border-slate-100">
               <div>
                 <p class="font-black text-slate-800">Notifications SMS</p>
@@ -116,6 +163,7 @@
               </div>
               <input type="checkbox" class="toggle toggle-primary" [(ngModel)]="user.notifications.sms">
             </div>
+            <!-- Toggle : Offres & Bons plans -->
             <div class="flex items-center justify-between p-6 bg-slate-50 rounded-3xl border border-slate-100">
               <div>
                 <p class="font-black text-slate-800">Offres & Bons plans</p>
@@ -126,10 +174,14 @@
           </div>
         </div>
 
-        <!-- Tab: Securite -->
+        <!-- ——————————————————————————
+          Panneau : Sécurité
+          Formulaire de changement de mot de passe + zone de danger
+        —————————————————————————— -->
         <div *ngIf="activeTab === 'securite'" class="bg-white rounded-[40px] p-10 shadow-sm border border-slate-100 animate-in fade-in slide-in-from-bottom-4 duration-500">
           <h3 class="text-2xl font-black text-slate-800 mb-8">Sécurité du compte</h3>
           <div class="space-y-8">
+            <!-- Formulaire de changement de mot de passe -->
             <div class="space-y-6">
               <div class="form-control">
                 <label class="label"><span class="label-text font-black text-slate-400 uppercase text-[10px] tracking-widest ml-2">Mot de passe actuel</span></label>
@@ -152,6 +204,7 @@
             
             <div class="divider"></div>
             
+            <!-- Zone de danger : suppression irréversible du compte -->
             <div class="p-8 bg-red-50 rounded-3xl border border-red-100">
               <h4 class="font-black text-red-600 mb-2">Zone de danger</h4>
               <p class="text-xs text-red-500 font-medium mb-6">La suppression de votre compte est irréversible. Toutes vos données seront effacées.</p>
