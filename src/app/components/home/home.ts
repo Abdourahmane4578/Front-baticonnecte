@@ -23,6 +23,9 @@ export class Home {
   constructor() {
     this.authService.isLoggedIn$.subscribe(status => {
       this.isLoggedIn = status;
+      if (status) {
+        this.router.navigate(['/annonces']);
+      }
     });
   }
 

@@ -17,10 +17,10 @@ export const routes: Routes = [
     title: 'Trouver un artisan',
     loadComponent: () => import('./components/ouvriers/ouvriers').then((m) => m.Ouvriers),
   },
-  { 
-    path: 'register', 
+  {
+    path: 'register',
     title: 'Inscription',
-    loadComponent: () => import('./components/register/register').then(m => m.Register) 
+    loadComponent: () => import('./components/register/register').then(m => m.Register)
   },
 
   {
