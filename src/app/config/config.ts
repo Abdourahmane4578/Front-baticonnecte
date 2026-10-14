@@ -8,15 +8,15 @@
  * Exemple : `${API_URL}/auth/login`
  */
 
+import { environment } from '../../environments/environment';
+
 /**
  * URL de base de l'API.
- * Navigateur : même origine (/api/v1) via le proxy ng serve — pas de CORS.
- * SSR (Node) : appel direct à Spring.
+ * Navigateur en local : /api/v1, relayé par le proxy ng serve.
+ * Build de production : l'API Render, sinon le site renvoie son HTML et JSON.parse échoue.
+ * SSR (Node) : appel direct, sans le proxy du navigateur.
  */
 export const API_URL =
   typeof globalThis !== 'undefined' && 'window' in globalThis
-    ? '/api/v1'
-    : 'http://localhost:8090/api/v1';
-
-/** URL de base de l'API (production sur Render) — décommenter pour le déploiement */
-// export const API_URL = 'https://baticonnecte-1.onrender.com/api/v1';
+    ? environment.apiUrl
+    : environment.serverApiUrl;

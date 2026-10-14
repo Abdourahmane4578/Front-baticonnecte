@@ -5,6 +5,11 @@
 export const environment = {
   production: false,
 
+  /** API métier. En local, le proxy ng serve envoie /api vers le port 8090. */
+  apiUrl: '/api/v1',
+  /** Même API, appelée par le serveur Node (pas de proxy navigateur). */
+  serverApiUrl: 'http://localhost:8090/api/v1',
+
   /** Service Chat externe (Node/Express + Socket.IO + MongoDB). */
   chat: {
     /** Base de l'API REST du service Chat (sans slash final). */

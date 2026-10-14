@@ -7,6 +7,10 @@
 export const environment = {
   production: true,
 
+  /** API Spring déployée. Le site statique n'a pas le proxy /api de ng serve. */
+  apiUrl: 'https://baticonnecte-1.onrender.com/api/v1',
+  serverApiUrl: 'https://baticonnecte-1.onrender.com/api/v1',
+
   chat: {
     // À remplacer par l'URL publique de la Gateway devant le service Chat.
     apiUrl: 'https://chat.baticonnect.example.com',
