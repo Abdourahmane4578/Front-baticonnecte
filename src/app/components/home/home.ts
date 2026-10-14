@@ -2,12 +2,15 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
+import { LucideAngularModule } from 'lucide-angular';
 import { AuthService } from '../../services/auth';
+import { ArtisanService } from '../../services/artisan.service';
+import { initialsOf } from '../../utils/avatar';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, LucideAngularModule],
   templateUrl: './home.html'
 })
 export class Home {
@@ -20,6 +23,12 @@ export class Home {
   isSearching: boolean = false;
   isLoggedIn: boolean = false;
 
+  // Liste d'artisans fournie par le service
+  allOuvriers: any[] = [];
+  filteredOuvriers: any[] = [];
+
+  private artisanService = inject(ArtisanService);
+
   constructor() {
     this.authService.isLoggedIn$.subscribe(status => {
       this.isLoggedIn = status;
@@ -27,17 +36,18 @@ export class Home {
         this.router.navigate(['/annonces']);
       }
     });
+
+    // S'abonner au flux d'artisans (fallback inclus dans le service)
+    this.artisanService.artisans$.subscribe(list => {
+      this.allOuvriers = list || [];
+      // Si l'utilisateur a déjà fait une recherche, met à jour les résultats
+      if (this.hasSearched) this.applyFilters();
+    });
   }
 
-  // Liste de test
-  allOuvriers = [
-    { id: 1, name: 'Moussa Diop', job: 'Plombier', city: 'Conakry', rating: 4.9 },
-    { id: 2, name: 'Amadou Diallo', job: 'Maçon', city: 'Kindia', rating: 4.7 },
-    { id: 3, name: 'Fatou Sow', job: 'Peintre', city: 'Labé', rating: 4.8 },
-    { id: 4, name: 'Jean Camara', job: 'Electricien', city: 'Kankan', rating: 4.5 }
-  ];
-
-  filteredOuvriers: any[] = [];
+  initials(name?: string): string {
+    return initialsOf(name);
+  }
 
   onSearch() {
     if (!this.isLoggedIn) {
@@ -49,12 +59,19 @@ export class Home {
 
     setTimeout(() => {
       this.hasSearched = true;
-      this.filteredOuvriers = this.allOuvriers.filter(artisan => {
-        const matchJob = artisan.job.toLowerCase().includes(this.searchJob.toLowerCase());
-        const matchCity = artisan.city.toLowerCase().includes(this.searchCity.toLowerCase());
-        return matchJob && matchCity;
-      });
+      this.applyFilters();
       this.isSearching = false;
-    }, 800);
+    }, 400);
+  }
+
+  private applyFilters() {
+    const jobQ = this.searchJob.trim().toLowerCase();
+    const cityQ = this.searchCity.trim().toLowerCase();
+
+    this.filteredOuvriers = this.allOuvriers.filter(artisan => {
+      const matchJob = jobQ ? `${artisan.nom || ''} ${artisan.nomComplet || ''}`.toLowerCase().includes(jobQ) : true;
+      const matchCity = cityQ ? (artisan.ville || '').toString().toLowerCase().includes(cityQ) : true;
+      return matchJob && matchCity;
+    });
   }
 }

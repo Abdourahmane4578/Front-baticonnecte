@@ -54,6 +54,11 @@ export const routes: Routes = [
     loadComponent: () => import('./components/job-board/job-board').then((m) => m.JobBoard),
   },
   {
+    path: 'annonces/:id',
+    title: 'Détail de l’annonce',
+    loadComponent: () => import('./components/post-detail/post-detail').then((m) => m.PostDetail),
+  },
+  {
     path: 'parametres',
     title: 'Paramètres',
     canActivate: [authGuard],

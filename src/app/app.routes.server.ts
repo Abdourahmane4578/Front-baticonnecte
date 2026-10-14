@@ -5,6 +5,10 @@ export const serverRoutes: ServerRoute[] = [
     path: 'profil/:id',
     renderMode: RenderMode.Server
   },
+  {
+    path: 'annonces/:id',
+    renderMode: RenderMode.Server
+  },
 
   {
     path: '**',

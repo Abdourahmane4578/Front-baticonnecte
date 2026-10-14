@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { LucideAngularModule } from 'lucide-angular';
 import { DevisService, Devis, DevisStats } from '../../services/devis.service';
 
 /**
@@ -12,7 +13,7 @@ import { DevisService, Devis, DevisStats } from '../../services/devis.service';
 @Component({
   selector: 'app-devis',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, LucideAngularModule],
   templateUrl: './devis.html'
 })
 export class DevisComponent implements OnInit, OnDestroy {
@@ -156,10 +157,10 @@ export class DevisComponent implements OnInit, OnDestroy {
 
   statutClass(s: string): string {
     const classes: Record<string, string> = {
-      EN_ATTENTE: 'bg-amber-100 text-amber-700 border border-amber-200',
-      ACCEPTE:    'bg-green-100 text-green-700 border border-green-200',
-      REFUSE:     'bg-red-100 text-red-700 border border-red-200',
-      TERMINE:    'bg-blue-100 text-blue-700 border border-blue-200'
+      EN_ATTENTE: 'chip-warning',
+      ACCEPTE:    'chip-success',
+      REFUSE:     'chip-error',
+      TERMINE:    'chip-primary'
     };
     return classes[s] || '';
   }

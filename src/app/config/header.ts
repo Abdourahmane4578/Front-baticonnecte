@@ -1,8 +1,13 @@
 import { HttpHeaders } from '@angular/common/http';
 
-export const headers=new HttpHeaders({
-    'Authorization': `Bearer ${localStorage.getItem('token')}`
+export function getAuthHeaders(): HttpHeaders {
+  const token = typeof localStorage !== 'undefined' ? localStorage.getItem('token') : null;
+  return new HttpHeaders({
+    Authorization: token ? `Bearer ${token}` : ''
   });
+}
+
+export const headers = getAuthHeaders();
   
   
   

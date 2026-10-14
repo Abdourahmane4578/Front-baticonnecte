@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { LucideAngularModule } from 'lucide-angular';
 
 /**
  * Composant Dashboard
@@ -10,7 +11,7 @@ import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, LucideAngularModule],
   templateUrl: './dashboard.html'
 })
 export class Dashboard {
@@ -40,10 +41,10 @@ export class Dashboard {
    */
   getStatusClass(status: string) {
     switch (status) {
-      case 'Confirmé':   return 'bg-green-50 text-green-600 border-green-100';
-      case 'En attente': return 'bg-amber-50 text-amber-600 border-amber-100';
-      case 'Terminé':    return 'bg-slate-50 text-slate-500 border-slate-100';
-      default:           return 'bg-blue-50 text-blue-600 border-blue-100';
+      case 'Confirmé':   return 'chip-success';
+      case 'En attente': return 'chip-warning';
+      case 'Terminé':    return '';
+      default:           return 'chip-primary';
     }
   }
 }

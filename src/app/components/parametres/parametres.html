@@ -3,220 +3,391 @@
   Interface de gestion du compte utilisateur avec navigation par onglets.
   Structure :
   - En-tête avec titre de la page
-  - Navigation latérale (Profil | Notifications | Sécurité | Déconnexion)
+  - Navigation latérale (Profil | Notifications | Sécurité | Métiers | Déconnexion)
   - Zone de contenu dynamique selon l'onglet actif
 =================================================== -->
-<div class="min-h-screen bg-slate-50 py-20 px-6">
-  <div class="max-w-5xl mx-auto">
-    
-    <!-- En-tête de la page -->
-    <div class="mb-12">
-      <h1 class="text-4xl font-black text-slate-800 tracking-tight">Paramètres</h1>
-      <p class="text-slate-500 font-medium mt-2">Gérez votre profil, vos notifications et la sécurité de votre compte.</p>
-    </div>
+<div class="page page-narrow">
 
-    <div class="flex flex-col md:flex-row gap-12">
-      
-      <!-- ============================
-        Navigation latérale par onglets
-        (click) met à jour activeTab pour afficher le bon panneau
-      ============================ -->
-      <nav class="md:w-64 space-y-2">
-        <!-- Onglet Profil -->
-        <button (click)="activeTab = 'profil'" 
-                [ngClass]="activeTab === 'profil' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'hover:bg-white text-slate-500'"
-                class="w-full flex items-center gap-4 px-6 py-4 rounded-2xl font-black text-sm transition-all duration-300">
-          <span class="text-lg">👤</span> Mon Profil
+  <!-- En-tête -->
+  <div class="mb-10">
+    <span class="eyebrow mb-3">Compte</span>
+    <h1 class="page-title">Paramètres</h1>
+    <p class="page-subtitle">Gérez votre profil, vos notifications et la sécurité de votre compte.</p>
+  </div>
+
+  <div class="flex flex-col md:flex-row gap-8">
+
+    <!-- Navigation latérale -->
+    <nav class="md:w-64 shrink-0">
+      <div class="card-bc p-2 space-y-1 md:sticky md:top-24">
+        <button (click)="activeTab = 'profil'"
+                [ngClass]="activeTab === 'profil' ? 'bg-primary text-primary-content shadow-md shadow-primary/25' : 'text-base-content/70 hover:bg-base-200 hover:text-base-content'"
+                class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm transition-all">
+          <lucide-icon name="user" class="w-4 h-4"></lucide-icon> Mon profil
         </button>
-        <!-- Onglet Notifications -->
-        <button (click)="activeTab = 'notifications'" 
-                [ngClass]="activeTab === 'notifications' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'hover:bg-white text-slate-500'"
-                class="w-full flex items-center gap-4 px-6 py-4 rounded-2xl font-black text-sm transition-all duration-300">
-          <span class="text-lg">🔔</span> Notifications
+        <button (click)="activeTab = 'notifications'"
+                [ngClass]="activeTab === 'notifications' ? 'bg-primary text-primary-content shadow-md shadow-primary/25' : 'text-base-content/70 hover:bg-base-200 hover:text-base-content'"
+                class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm transition-all">
+          <lucide-icon name="bell" class="w-4 h-4"></lucide-icon> Notifications
         </button>
-        <!-- Onglet Sécurité -->
-        <button (click)="activeTab = 'securite'" 
-                [ngClass]="activeTab === 'securite' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'hover:bg-white text-slate-500'"
-                class="w-full flex items-center gap-4 px-6 py-4 rounded-2xl font-black text-sm transition-all duration-300">
-          <span class="text-lg">🔒</span> Sécurité
+        <button (click)="activeTab = 'securite'"
+                [ngClass]="activeTab === 'securite' ? 'bg-primary text-primary-content shadow-md shadow-primary/25' : 'text-base-content/70 hover:bg-base-200 hover:text-base-content'"
+                class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm transition-all">
+          <lucide-icon name="shield" class="w-4 h-4"></lucide-icon> Sécurité
         </button>
-        
-        <!-- Séparateur + bouton de déconnexion -->
-        <div class="pt-8 border-t border-slate-200 mt-8">
-          <button class="w-full flex items-center gap-4 px-6 py-4 rounded-2xl font-black text-sm text-red-500 hover:bg-red-50 transition-all">
-            <span class="text-lg">🚪</span> Déconnexion
+        <button (click)="activeTab = 'metiers'"
+                [ngClass]="activeTab === 'metiers' ? 'bg-primary text-primary-content shadow-md shadow-primary/25' : 'text-base-content/70 hover:bg-base-200 hover:text-base-content'"
+                class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm transition-all">
+          <lucide-icon name="toolbox" class="w-4 h-4"></lucide-icon> Métiers
+        </button>
+
+        <div class="pt-2 mt-2 border-t border-base-300/70">
+          <button (click)="logout()" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm text-error hover:bg-error/10 transition-colors cursor-pointer">
+            <lucide-icon name="log-out" class="w-4 h-4"></lucide-icon> Déconnexion
           </button>
         </div>
-      </nav>
+      </div>
+    </nav>
 
-      <!-- ============================
-        Zone de contenu : panneau affiché selon activeTab
-      ============================ -->
-      <main class="flex-1">
-        
-        <!-- ——————————————————————————
-          Panneau : Profil
-          Permet de modifier photo, visibilité et infos personnelles
-        —————————————————————————— -->
-        <div *ngIf="activeTab === 'profil'" class="bg-white rounded-[40px] p-10 shadow-sm border border-slate-100 animate-in fade-in slide-in-from-bottom-4 duration-500">
-          
-          <!-- Section photo de profil -->
-          <div class="flex flex-col md:flex-row items-center gap-10 mb-12">
-            <div class="relative group">
-              <div class="w-32 h-32 rounded-[32px] overflow-hidden border-4 border-slate-50 shadow-inner">
-                <!-- Avatar généré par DiceBear selon le nom de l'utilisateur -->
-                <img src="https://api.dicebear.com/8.x/avataaars/svg?seed=Moussa" class="w-full h-full">
-              </div>
-              <!-- Bouton flottant pour changer la photo -->
-              <button class="absolute -bottom-2 -right-2 w-10 h-10 bg-white text-slate-800 rounded-xl border-4 border-white shadow-lg flex items-center justify-center hover:bg-slate-50 transition-colors">
-                📷
-              </button>
-            </div>
-            <div>
-              <h3 class="text-xl font-black text-slate-800">Photo de profil</h3>
-              <p class="text-sm text-slate-400 font-medium mt-1">JPG, GIF ou PNG. Max 2Mo.</p>
-              <div class="flex gap-3 mt-4">
-                <button class="btn btn-sm btn-outline rounded-xl font-black text-[10px] uppercase tracking-widest border-slate-200">Supprimer</button>
-                <button class="btn btn-sm btn-primary rounded-xl font-black text-[10px] uppercase tracking-widest text-white border-none">Changer</button>
-              </div>
+    <!-- Contenu -->
+    <main class="flex-1 min-w-0">
+
+      <!-- Panneau : Profil -->
+      <div *ngIf="activeTab === 'profil'" class="card-bc p-6 md:p-8 animate-fade-up">
+
+        <div class="flex flex-col sm:flex-row items-center gap-6 mb-8 pb-8 border-b border-base-300/70">
+          <div class="relative">
+            <div class="w-28 h-28 rounded-full overflow-hidden ring-4 ring-base-200 bg-primary/12 text-primary flex items-center justify-center text-3xl font-bold">
+              <img *ngIf="user.imageUrl" [src]="user.imageUrl" [alt]="user.nomComplet" class="w-full h-full object-cover">
+              <span *ngIf="!user.imageUrl">{{ initials(user.nomComplet) }}</span>
             </div>
           </div>
-
-          <!-- Toggle de visibilité du profil dans les résultats de recherche -->
-          <div class="flex items-center justify-between p-6 bg-slate-50 rounded-3xl border border-slate-100 mb-8">
-            <div>
-              <p class="font-black text-slate-800">Profil Actif (Visible)</p>
-              <p class="text-xs text-slate-500 font-medium mt-1">Désactivez pour ne plus apparaître dans la liste des ouvriers.</p>
-            </div>
-            <!-- Lié à user.isActive via ngModel -->
-            <input type="checkbox" class="toggle toggle-primary" [(ngModel)]="user.isActive">
-          </div>
-
-          <!-- Formulaire de modification des informations personnelles -->
-          <form (ngSubmit)="saveChanges()" class="space-y-8">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <!-- Champ Nom complet -->
-              <div class="form-control">
-                <label class="label"><span class="label-text font-black text-slate-400 uppercase text-[10px] tracking-widest ml-2">Nom complet</span></label>
-                <input type="text" [(ngModel)]="user.name" name="name" class="input input-bordered w-full h-14 rounded-2xl bg-slate-50 focus:input-primary transition-all border-slate-100 font-bold">
-              </div>
-              <!-- Champ Email -->
-              <div class="form-control">
-                <label class="label"><span class="label-text font-black text-slate-400 uppercase text-[10px] tracking-widest ml-2">Email</span></label>
-                <input type="email" [(ngModel)]="user.email" name="email" class="input input-bordered w-full h-14 rounded-2xl bg-slate-50 focus:input-primary transition-all border-slate-100 font-bold">
-              </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <!-- Champ Téléphone -->
-              <div class="form-control">
-                <label class="label"><span class="label-text font-black text-slate-400 uppercase text-[10px] tracking-widest ml-2">Téléphone</span></label>
-                <input type="text" [(ngModel)]="user.phone" name="phone" class="input input-bordered w-full h-14 rounded-2xl bg-slate-50 focus:input-primary transition-all border-slate-100 font-bold">
-              </div>
-              <!-- Champ Ville (liste déroulante) -->
-              <div class="form-control">
-                <label class="label"><span class="label-text font-black text-slate-400 uppercase text-[10px] tracking-widest ml-2">Ville</span></label>
-                <select [(ngModel)]="user.city" name="city" class="select select-bordered w-full h-14 rounded-2xl bg-slate-50 focus:select-primary transition-all border-slate-100 font-bold">
-                  <option>Dakar</option>
-                  <option>Conakry</option>
-                  <option>Bamako</option>
-                  <option>Abidjan</option>
-                </select>
-              </div>
-            </div>
-
-            <!-- Champ Bio / Description -->
-            <div class="form-control">
-              <label class="label"><span class="label-text font-black text-slate-400 uppercase text-[10px] tracking-widest ml-2">Bio</span></label>
-              <textarea [(ngModel)]="user.bio" name="bio" rows="4" class="textarea textarea-bordered w-full p-6 rounded-3xl bg-slate-50 focus:textarea-primary transition-all border-slate-100 font-bold"></textarea>
-            </div>
-
-            <!-- Bouton de soumission du formulaire -->
-            <div class="pt-8 border-t border-slate-50">
-              <button type="submit" class="btn btn-primary h-16 px-12 rounded-2xl text-white normal-case text-lg font-black shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all border-none">
-                Enregistrer les modifications
-              </button>
-            </div>
-          </form>
-        </div>
-
-        <!-- ——————————————————————————
-          Panneau : Notifications
-          Toggles pour les préférences de notification
-        —————————————————————————— -->
-        <div *ngIf="activeTab === 'notifications'" class="bg-white rounded-[40px] p-10 shadow-sm border border-slate-100 animate-in fade-in slide-in-from-bottom-4 duration-500">
-          <h3 class="text-2xl font-black text-slate-800 mb-8">Préférences de notification</h3>
-          <div class="space-y-6">
-            <!-- Toggle : Notifications par Email -->
-            <div class="flex items-center justify-between p-6 bg-slate-50 rounded-3xl border border-slate-100">
-              <div>
-                <p class="font-black text-slate-800">Notifications par Email</p>
-                <p class="text-xs text-slate-500 font-medium mt-1">Recevez vos nouveaux messages par mail.</p>
-              </div>
-              <input type="checkbox" class="toggle toggle-primary" [(ngModel)]="user.notifications.email">
-            </div>
-            <!-- Toggle : Notifications SMS -->
-            <div class="flex items-center justify-between p-6 bg-slate-50 rounded-3xl border border-slate-100">
-              <div>
-                <p class="font-black text-slate-800">Notifications SMS</p>
-                <p class="text-xs text-slate-500 font-medium mt-1">Soyez prévenu instantanément sur votre mobile.</p>
-              </div>
-              <input type="checkbox" class="toggle toggle-primary" [(ngModel)]="user.notifications.sms">
-            </div>
-            <!-- Toggle : Offres & Bons plans -->
-            <div class="flex items-center justify-between p-6 bg-slate-50 rounded-3xl border border-slate-100">
-              <div>
-                <p class="font-black text-slate-800">Offres & Bons plans</p>
-                <p class="text-xs text-slate-500 font-medium mt-1">Recevez les meilleures opportunités BatiConnect.</p>
-              </div>
-              <input type="checkbox" class="toggle toggle-primary" [(ngModel)]="user.notifications.deals">
+          <div class="text-center sm:text-left">
+            <h3 class="text-lg font-bold text-base-content">Photo de profil</h3>
+            <p class="text-sm text-base-content/55 mt-0.5">JPG ou PNG. Envoyée via l’API photo de profil.</p>
+            <div class="flex gap-2 mt-4 justify-center sm:justify-start">
+              <label class="btn btn-primary btn-sm rounded-full cursor-pointer">
+                <lucide-icon name="camera" class="w-4 h-4"></lucide-icon>
+                Changer
+                <input type="file" accept="image/*" class="hidden" (change)="onPhotoSelected($event)">
+              </label>
             </div>
           </div>
         </div>
 
-        <!-- ——————————————————————————
-          Panneau : Sécurité
-          Formulaire de changement de mot de passe + zone de danger
-        —————————————————————————— -->
-        <div *ngIf="activeTab === 'securite'" class="bg-white rounded-[40px] p-10 shadow-sm border border-slate-100 animate-in fade-in slide-in-from-bottom-4 duration-500">
-          <h3 class="text-2xl font-black text-slate-800 mb-8">Sécurité du compte</h3>
-          <div class="space-y-8">
-            <!-- Formulaire de changement de mot de passe -->
-            <div class="space-y-6">
-              <div class="form-control">
-                <label class="label"><span class="label-text font-black text-slate-400 uppercase text-[10px] tracking-widest ml-2">Mot de passe actuel</span></label>
-                <input type="password" class="input input-bordered w-full h-14 rounded-2xl bg-slate-50 focus:input-primary transition-all border-slate-100 font-bold">
-              </div>
-              <div class="form-control">
-                <label class="label"><span class="label-text font-black text-slate-400 uppercase text-[10px] tracking-widest ml-2">Nouveau mot de passe</span></label>
-                <input type="password" class="input input-bordered w-full h-14 rounded-2xl bg-slate-50 focus:input-primary transition-all border-slate-100 font-bold">
-              </div>
-              <div class="form-control">
-                <label class="label"><span class="label-text font-black text-slate-400 uppercase text-[10px] tracking-widest ml-2">Confirmer le nouveau mot de passe</span></label>
-                <input type="password" class="input input-bordered w-full h-14 rounded-2xl bg-slate-50 focus:input-primary transition-all border-slate-100 font-bold">
+        <div *ngIf="isOuvrier" class="soft-row flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 mb-8">
+          <div>
+            <p class="font-semibold text-base-content">Offre ouvrier</p>
+            <p *ngIf="ouvrierProfileId" class="text-xs text-base-content/55 mt-0.5">
+              Métier publié : <span class="font-semibold text-base-content">{{ ouvrierMetier || 'Non renseigné' }}</span>
+            </p>
+            <p *ngIf="!ouvrierProfileId" class="text-xs text-base-content/55 mt-0.5">
+              Aucune offre publiée. Vous n’apparaissez pas encore dans l’annuaire.
+            </p>
+          </div>
+          <div class="flex gap-2 self-start sm:self-auto">
+            <a routerLink="/publier" class="btn btn-primary btn-sm rounded-full">
+              {{ ouvrierProfileId ? 'Modifier l’offre' : 'Publier mon offre' }}
+            </a>
+            <button *ngIf="ouvrierProfileId" type="button" (click)="retirerOffre()"
+                    [disabled]="isRemovingOffre" class="btn btn-outline btn-sm rounded-full">
+              Retirer
+            </button>
+          </div>
+        </div>
+
+        <!-- Apparence : clair / sombre / système -->
+        <div class="soft-row flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 mb-8">
+          <div>
+            <p class="font-semibold text-base-content">Apparence</p>
+            <p class="text-xs text-base-content/55 mt-0.5">Choisissez le thème de l'interface.</p>
+          </div>
+          <div class="join rounded-full border border-base-300/80 bg-base-100 p-1 self-start sm:self-auto">
+            <button type="button" (click)="theme.set('light')"
+                    [class]="theme.preference() === 'light' ? 'btn btn-primary btn-sm' : 'btn btn-ghost btn-sm'"
+                    class="join-item rounded-full px-3">
+              <lucide-icon name="sun" class="w-4 h-4"></lucide-icon> Clair
+            </button>
+            <button type="button" (click)="theme.set('dark')"
+                    [class]="theme.preference() === 'dark' ? 'btn btn-primary btn-sm' : 'btn btn-ghost btn-sm'"
+                    class="join-item rounded-full px-3">
+              <lucide-icon name="moon" class="w-4 h-4"></lucide-icon> Sombre
+            </button>
+            <button type="button" (click)="theme.set('system')"
+                    [class]="theme.preference() === 'system' ? 'btn btn-primary btn-sm' : 'btn btn-ghost btn-sm'"
+                    class="join-item rounded-full px-3">
+              <lucide-icon name="monitor" class="w-4 h-4"></lucide-icon> Système
+            </button>
+          </div>
+        </div>
+
+        <div class="space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div>
+              <label class="field-label">Nom complet</label>
+              <div class="input-icon">
+                <lucide-icon name="user"></lucide-icon>
+                <input type="text" [(ngModel)]="user.nomComplet" name="nomComplet" class="input w-full" readonly>
               </div>
             </div>
-            <div class="pt-8 border-t border-slate-50">
-              <button class="btn btn-primary h-16 px-12 rounded-2xl text-white normal-case text-lg font-black shadow-xl shadow-primary/20 border-none">
-                Mettre à jour le mot de passe
-              </button>
+            <div>
+              <label class="field-label">Email</label>
+              <div class="input-icon">
+                <lucide-icon name="mail"></lucide-icon>
+                <input type="email" [(ngModel)]="user.email" name="email" class="input w-full" readonly>
+              </div>
             </div>
-            
-            <div class="divider"></div>
-            
-            <!-- Zone de danger : suppression irréversible du compte -->
-            <div class="p-8 bg-red-50 rounded-3xl border border-red-100">
-              <h4 class="font-black text-red-600 mb-2">Zone de danger</h4>
-              <p class="text-xs text-red-500 font-medium mb-6">La suppression de votre compte est irréversible. Toutes vos données seront effacées.</p>
-              <button class="btn btn-error btn-outline h-12 rounded-xl normal-case font-black text-xs uppercase tracking-widest">
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div>
+              <label class="field-label">Adresse</label>
+              <div class="input-icon">
+                <lucide-icon name="house"></lucide-icon>
+                <input type="text" [(ngModel)]="user.adresse" name="adresse" class="input w-full" readonly>
+              </div>
+            </div>
+            <div>
+              <label class="field-label">Ville</label>
+              <div class="input-icon">
+                <lucide-icon name="map-pin"></lucide-icon>
+                <input type="text" [(ngModel)]="user.ville" name="ville" class="input w-full" readonly>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div>
+              <label class="field-label">Rôle</label>
+              <input type="text" [ngModel]="user.role" name="role" class="input w-full" readonly>
+            </div>
+            <div>
+              <label class="field-label">Statut</label>
+              <input type="text" [ngModel]="user.statut" name="statut" class="input w-full" readonly>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panneau : Notifications -->
+      <div *ngIf="activeTab === 'notifications'" class="card-bc p-6 md:p-8 animate-fade-up">
+        <h3 class="text-lg font-bold text-base-content mb-1">Préférences de notification</h3>
+        <p class="text-sm text-base-content/55 mb-6">Choisissez comment vous souhaitez être informé.</p>
+        <div class="space-y-3">
+          <div class="soft-row flex items-center justify-between gap-4 p-5">
+            <div class="flex items-center gap-4">
+              <span class="icon-box"><lucide-icon name="mail"></lucide-icon></span>
+              <div>
+                <p class="font-semibold text-base-content">Notifications par e-mail</p>
+                <p class="text-xs text-base-content/55 mt-0.5">Recevez vos nouveaux messages par mail.</p>
+              </div>
+            </div>
+            <input type="checkbox" class="toggle toggle-primary" [(ngModel)]="user.notifications.email">
+          </div>
+          <div class="soft-row flex items-center justify-between gap-4 p-5">
+            <div class="flex items-center gap-4">
+              <span class="icon-box icon-box-secondary"><lucide-icon name="phone"></lucide-icon></span>
+              <div>
+                <p class="font-semibold text-base-content">Notifications SMS</p>
+                <p class="text-xs text-base-content/55 mt-0.5">Soyez prévenu instantanément sur votre mobile.</p>
+              </div>
+            </div>
+            <input type="checkbox" class="toggle toggle-primary" [(ngModel)]="user.notifications.sms">
+          </div>
+          <div class="soft-row flex items-center justify-between gap-4 p-5">
+            <div class="flex items-center gap-4">
+              <span class="icon-box icon-box-accent"><lucide-icon name="sparkles"></lucide-icon></span>
+              <div>
+                <p class="font-semibold text-base-content">Offres & bons plans</p>
+                <p class="text-xs text-base-content/55 mt-0.5">Recevez les meilleures opportunités BatiConnect.</p>
+              </div>
+            </div>
+            <input type="checkbox" class="toggle toggle-primary" [(ngModel)]="user.notifications.deals">
+          </div>
+        </div>
+      </div>
+
+      <!-- Panneau : Sécurité -->
+      <div *ngIf="activeTab === 'securite'" class="card-bc p-6 md:p-8 animate-fade-up">
+        <h3 class="text-lg font-bold text-base-content mb-1">Sécurité du compte</h3>
+        <p class="text-sm text-base-content/55 mb-6">Mettez à jour votre mot de passe régulièrement.</p>
+
+        <div class="space-y-5">
+          <div>
+            <label class="field-label">Mot de passe actuel</label>
+            <div class="input-icon">
+              <lucide-icon name="lock-keyhole"></lucide-icon>
+              <input type="password" class="input w-full" autocomplete="current-password">
+            </div>
+          </div>
+          <div>
+            <label class="field-label">Nouveau mot de passe</label>
+            <div class="input-icon">
+              <lucide-icon name="key-round"></lucide-icon>
+              <input type="password" class="input w-full" autocomplete="new-password">
+            </div>
+          </div>
+          <div>
+            <label class="field-label">Confirmer le nouveau mot de passe</label>
+            <div class="input-icon">
+              <lucide-icon name="key-round"></lucide-icon>
+              <input type="password" class="input w-full" autocomplete="new-password">
+            </div>
+          </div>
+
+          <div class="pt-5 border-t border-base-300/70 flex justify-end">
+            <button class="btn btn-primary rounded-full px-6">
+              <lucide-icon name="shield-check" class="w-4 h-4"></lucide-icon>
+              Mettre à jour le mot de passe
+            </button>
+          </div>
+        </div>
+
+        <div class="mt-8 p-6 rounded-xl bg-error/6 border border-error/20">
+          <div class="flex items-start gap-3">
+            <span class="icon-box bg-error/10 text-error w-9 h-9 rounded-lg"><lucide-icon name="triangle-alert" class="w-4 h-4"></lucide-icon></span>
+            <div class="flex-1">
+              <h4 class="font-bold text-error">Zone de danger</h4>
+              <p class="text-xs text-base-content/65 mt-1 mb-4">La suppression de votre compte est irréversible. Toutes vos données seront effacées.</p>
+              <button class="btn btn-sm rounded-full btn-danger-soft">
+                <lucide-icon name="trash-2" class="w-3.5 h-3.5"></lucide-icon>
                 Supprimer mon compte
               </button>
             </div>
           </div>
         </div>
+      </div>
 
-      </main>
+      <!-- Panneau : Métiers -->
+      <div *ngIf="activeTab === 'metiers'" class="space-y-6 animate-fade-up">
+        <div>
+          <span class="eyebrow mb-3"><lucide-icon name="toolbox" class="w-3.5 h-3.5"></lucide-icon>Gestion des métiers</span>
+          <h3 class="text-2xl font-bold text-base-content">Atlas des compétences</h3>
+          <p class="text-sm text-base-content/55 mt-1">Créez, modifiez et organisez les métiers disponibles pour les annonces et les profils.</p>
+        </div>
 
+        <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+          <!-- Formulaire -->
+          <form class="card-bc p-6 space-y-5">
+            <div class="flex items-center justify-between gap-3">
+              <div>
+                <p class="text-xs font-semibold uppercase tracking-wider text-base-content/50">Formulaire</p>
+                <h4 class="text-lg font-bold text-base-content mt-0.5">
+                  {{ editingMetierId !== null && editingMetierId !== undefined ? 'Modifier le métier' : 'Créer un métier' }}
+                </h4>
+              </div>
+              <span class="icon-box"><lucide-icon name="sparkles"></lucide-icon></span>
+            </div>
+
+            <div class="space-y-4">
+              <div>
+                <label class="field-label">Nom du métier</label>
+                <div class="input-icon">
+                  <lucide-icon name="hammer"></lucide-icon>
+                  <input type="text" [(ngModel)]="metierForm.nom" name="metierNom" class="input w-full" placeholder="Ex : soudeur, maçon, électricien">
+                </div>
+              </div>
+
+              <div>
+                <label class="field-label">Description</label>
+                <textarea [(ngModel)]="metierForm.description" name="metierDescription" rows="4" class="textarea w-full leading-relaxed" placeholder="Décrivez ce métier, ses missions et ses compétences…"></textarea>
+              </div>
+
+              <div>
+                <label class="field-label">Statut</label>
+                <select [(ngModel)]="metierForm.statut" name="metierStatut" class="select w-full">
+                  <option value="ACTIF">ACTIF</option>
+                  <option value="INACTIF">INACTIF</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="flex gap-2 flex-wrap pt-1">
+              <button type="button" (click)="submitMetierForm()" [disabled]="isSubmittingMetier" class="btn btn-primary rounded-full px-6">
+                <span *ngIf="!isSubmittingMetier" class="inline-flex items-center gap-2">
+                  <lucide-icon name="check" class="w-4 h-4"></lucide-icon>
+                  {{ editingMetierId !== null && editingMetierId !== undefined ? 'Enregistrer les modifications' : 'Créer le métier' }}
+                </span>
+                <span *ngIf="isSubmittingMetier" class="inline-flex items-center gap-2">
+                  <span class="loading loading-spinner loading-sm"></span>
+                  En cours…
+                </span>
+              </button>
+
+              <button *ngIf="editingMetierId !== null && editingMetierId !== undefined" type="button" (click)="resetMetierForm()" class="btn btn-ghost rounded-full">
+                Annuler
+              </button>
+            </div>
+          </form>
+
+          <!-- Liste -->
+          <div class="card-bc p-5">
+            <div class="flex items-center justify-between mb-4">
+              <div>
+                <p class="text-xs font-semibold uppercase tracking-wider text-base-content/50">Liste</p>
+                <h4 class="text-lg font-bold text-base-content mt-0.5">Métiers existants</h4>
+              </div>
+              <span class="chip chip-primary text-sm px-3">{{ metiers.length }}</span>
+            </div>
+
+            <div *ngIf="!metiers.length" class="empty-state py-12">
+              <span class="icon-box mx-auto mb-3"><lucide-icon name="pin"></lucide-icon></span>
+              <p class="text-base font-bold text-base-content">Aucun métier enregistré</p>
+              <p class="text-sm text-base-content/55 mt-1">Créez votre premier métier pour alimenter les annonces.</p>
+            </div>
+
+            <div *ngIf="metiers.length" class="space-y-2.5 max-h-[460px] overflow-y-auto pr-1">
+              <div *ngFor="let metier of metiers" class="soft-row p-4 flex flex-col gap-3">
+                <div class="flex items-start justify-between gap-3 min-w-0">
+                  <div class="min-w-0 flex-1">
+                    <p class="font-semibold text-base-content text-sm leading-5">{{ metier.nom || metier.name || metier.label }}</p>
+                    <p class="text-xs text-base-content/55 mt-1 line-clamp-2">{{ metier.description || 'Aucune description' }}</p>
+                  </div>
+                  <span class="chip text-[10px] py-1 shrink-0"
+                        [ngClass]="(metier.statut || metier.status || 'ACTIF') === 'ACTIF' ? 'chip-success' : ''">
+                    {{ metier.statut || metier.status || 'ACTIF' }}
+                  </span>
+                </div>
+
+                <div class="flex items-center justify-end gap-1.5">
+                  <button type="button" (click)="editMetier(metier)" class="btn btn-soft btn-xs rounded-full">
+                    <lucide-icon name="pencil" class="w-3 h-3"></lucide-icon>Modifier
+                  </button>
+                  <button type="button" (click)="openDeleteModal(metier.id)" [disabled]="isDeletingMetier" class="btn btn-danger-soft btn-xs rounded-full whitespace-nowrap">
+                    <lucide-icon name="trash-2" class="w-3 h-3"></lucide-icon>
+                    {{ isDeletingMetier && deletingMetierId === metier.id ? 'Supp…' : 'Supprimer' }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- Modale de suppression -->
+<div *ngIf="showDeleteModal" class="modal-backdrop-bc">
+  <div class="modal-panel-bc max-w-md p-6">
+    <span class="icon-box bg-error/10 text-error mb-4"><lucide-icon name="trash-2"></lucide-icon></span>
+    <h3 class="text-xl font-bold text-base-content">Supprimer ce métier ?</h3>
+    <p class="mt-2 text-sm leading-6 text-base-content/65">
+      Cette action est irréversible. Voulez-vous vraiment supprimer ce métier ?
+    </p>
+
+    <div class="mt-6 flex justify-end gap-2">
+      <button type="button" (click)="cancelDelete()" class="btn btn-ghost rounded-full">
+        Non
+      </button>
+      <button type="button" (click)="confirmDeleteMetier()" [disabled]="isDeletingMetier" class="btn btn-error text-error-content rounded-full">
+        <span *ngIf="!isDeletingMetier">Oui, supprimer</span>
+        <span *ngIf="isDeletingMetier" class="inline-flex items-center gap-2">
+          <span class="loading loading-spinner loading-sm"></span>
+          Suppression…
+        </span>
+      </button>
     </div>
   </div>
 </div>

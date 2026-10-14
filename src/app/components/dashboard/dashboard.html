@@ -5,110 +5,97 @@
   - Grille de statistiques (demandes, dépenses, favoris)
   - Tableau des projets récents avec badge de statut coloré
 =================================================== -->
-<div class="min-h-screen bg-slate-50/50 p-8">
-  <div class="max-w-7xl mx-auto">
-    
-    <!-- En-tête : salutation + actions principales -->
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-6">
-      <div>
-        <h1 class="text-4xl font-black text-slate-800 mb-2">Bienvenue, Diallo 👋</h1>
-        <p class="text-slate-500 font-medium">Voici l'aperçu de vos projets et activités en cours.</p>
+<div class="page">
+
+  <!-- En-tête -->
+  <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-5">
+    <div>
+      <span class="eyebrow mb-3">Tableau de bord</span>
+      <h1 class="page-title">Bienvenue, Diallo 👋</h1>
+      <p class="page-subtitle">Voici l'aperçu de vos projets et activités en cours.</p>
+    </div>
+    <div class="flex gap-2">
+      <button class="btn btn-outline rounded-full">
+        <lucide-icon name="download" class="w-4 h-4"></lucide-icon>
+        Exporter
+      </button>
+      <button class="btn btn-primary rounded-full">
+        <lucide-icon name="plus" class="w-4 h-4"></lucide-icon>
+        Nouveau projet
+      </button>
+    </div>
+  </div>
+
+  <!-- KPI -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
+
+    <div class="card-bc card-bc-hover p-6 group">
+      <div class="flex justify-between items-start mb-5">
+        <span class="icon-box"><lucide-icon name="rocket"></lucide-icon></span>
+        <span class="chip chip-success"><lucide-icon name="trending-up" class="w-3 h-3"></lucide-icon>+12 %</span>
       </div>
-      <div class="flex gap-4">
-        <!-- Bouton secondaire : export des données -->
-        <button class="btn btn-outline border-slate-200 rounded-2xl px-6 h-12 font-black">
-          Exporter
-        </button>
-        <!-- Bouton principal : création d'un nouveau projet -->
-        <button class="btn btn-primary rounded-2xl px-8 h-12 font-black shadow-xl shadow-primary/20 border-none">
-          + Nouveau projet
-        </button>
-      </div>
+      <p class="text-xs font-semibold uppercase tracking-wider text-base-content/55 mb-1">Demandes actives</p>
+      <p class="font-display text-4xl font-extrabold tracking-tight text-base-content">02</p>
     </div>
 
-    <!-- Grille de statistiques (3 KPIs) -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-
-      <!-- Stat 1 : Demandes actives -->
-      <div class="bg-white p-8 rounded-[32px] shadow-sm border border-slate-100 group hover:border-primary/30 transition-all duration-300">
-        <div class="flex justify-between items-start mb-4">
-          <div class="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">🚀</div>
-          <!-- Badge de tendance positive -->
-          <span class="text-xs font-black text-green-500 bg-green-50 px-2 py-1 rounded-lg">+12%</span>
-        </div>
-        <p class="text-slate-400 font-black text-[10px] uppercase tracking-[0.2em] mb-1">Demandes actives</p>
-        <p class="text-4xl font-black text-slate-800 tracking-tight">02</p>
+    <div class="card-bc card-bc-hover p-6 group">
+      <div class="flex justify-between items-start mb-5">
+        <span class="icon-box icon-box-accent"><lucide-icon name="coins"></lucide-icon></span>
+        <span class="chip">Total</span>
       </div>
-
-      <!-- Stat 2 : Dépenses totales -->
-      <div class="bg-white p-8 rounded-[32px] shadow-sm border border-slate-100 group hover:border-primary/30 transition-all duration-300">
-        <div class="flex justify-between items-start mb-4">
-          <div class="w-12 h-12 bg-amber-500/10 rounded-2xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">💰</div>
-          <span class="text-xs font-black text-slate-400 bg-slate-50 px-2 py-1 rounded-lg">Total</span>
-        </div>
-        <p class="text-slate-400 font-black text-[10px] uppercase tracking-[0.2em] mb-1">Dépenses totales</p>
-        <p class="text-4xl font-black text-slate-800 tracking-tight">90k <span class="text-lg text-slate-400">GNF</span></p>
-      </div>
-
-      <!-- Stat 3 : Artisans favoris -->
-      <div class="bg-white p-8 rounded-[32px] shadow-sm border border-slate-100 group hover:border-primary/30 transition-all duration-300">
-        <div class="flex justify-between items-start mb-4">
-          <div class="w-12 h-12 bg-green-500/10 rounded-2xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">⭐</div>
-          <span class="text-xs font-black text-primary bg-primary/5 px-2 py-1 rounded-lg">Top</span>
-        </div>
-        <p class="text-slate-400 font-black text-[10px] uppercase tracking-[0.2em] mb-1">Artisans favoris</p>
-        <p class="text-4xl font-black text-slate-800 tracking-tight">05</p>
-      </div>
+      <p class="text-xs font-semibold uppercase tracking-wider text-base-content/55 mb-1">Dépenses totales</p>
+      <p class="font-display text-4xl font-extrabold tracking-tight text-base-content">90k <span class="text-lg text-base-content/45 font-bold">GNF</span></p>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      
-      <!-- Section tableau des projets récents (prend toute la largeur) -->
-      <div class="lg:col-span-3 space-y-8">
-        <div class="bg-white rounded-[40px] shadow-sm border border-slate-100 overflow-hidden">
-          <div class="p-8 border-b border-slate-50 flex justify-between items-center">
-            <h3 class="font-black text-2xl text-slate-800">Projets Récents</h3>
-            <button class="text-primary font-black text-sm hover:underline">Voir tout</button>
-          </div>
-          <div class="overflow-x-auto p-6">
-            <table class="table w-full">
-              <thead>
-                <!-- En-têtes du tableau -->
-                <tr class="text-slate-400 font-black uppercase text-[10px] tracking-widest border-none">
-                  <th class="bg-transparent">Artisan</th>
-                  <th class="bg-transparent">Service</th>
-                  <th class="bg-transparent">Statut</th>
-                  <th class="bg-transparent text-right">Prix</th>
-                </tr>
-              </thead>
-              <tbody>
-                <!-- Ligne de projet : itération sur la liste des projets du composant -->
-                <tr *ngFor="let p of projets" class="hover:bg-slate-50 transition-colors">
-                  <td class="border-none py-4">
-                    <div class="flex items-center gap-3">
-                      <!-- Avatar généré depuis la première lettre du nom de l'artisan -->
-                      <div class="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center font-black text-slate-500 text-xs">
-                        {{p.artisan[0]}}
-                      </div>
-                      <span class="font-bold text-slate-800">{{p.artisan}}</span>
-                    </div>
-                  </td>
-                  <td class="border-none text-slate-500 font-medium">{{p.service}}</td>
-                  <td class="border-none">
-                    <!-- Badge de statut coloré dynamiquement via getStatusClass() -->
-                    <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border" [ngClass]="getStatusClass(p.status)">
-                      {{p.status}}
-                    </span>
-                  </td>
-                  <td class="border-none text-right font-black text-slate-800">{{p.price}}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
+    <div class="card-bc card-bc-hover p-6 group">
+      <div class="flex justify-between items-start mb-5">
+        <span class="icon-box icon-box-success"><lucide-icon name="star"></lucide-icon></span>
+        <span class="chip chip-primary">Top</span>
       </div>
-
+      <p class="text-xs font-semibold uppercase tracking-wider text-base-content/55 mb-1">Artisans favoris</p>
+      <p class="font-display text-4xl font-extrabold tracking-tight text-base-content">05</p>
     </div>
+  </div>
 
+  <!-- Projets récents -->
+  <div class="card-bc overflow-hidden">
+    <div class="px-6 py-5 border-b border-base-300/70 flex justify-between items-center">
+      <h3 class="text-lg font-bold text-base-content">Projets récents</h3>
+      <button class="link-bc text-sm inline-flex items-center gap-1">
+        Voir tout
+        <lucide-icon name="arrow-right" class="w-4 h-4"></lucide-icon>
+      </button>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="table table-bc w-full">
+        <thead>
+          <tr>
+            <th class="pl-6">Artisan</th>
+            <th>Service</th>
+            <th>Statut</th>
+            <th class="text-right pr-6">Prix</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let p of projets" class="hover:bg-base-200/60 transition-colors">
+            <td class="pl-6 py-4">
+              <div class="flex items-center gap-3">
+                <div class="avatar-bc w-10 h-10 rounded-xl font-bold text-xs">
+                  {{p.artisan[0]}}
+                </div>
+                <span class="font-semibold text-base-content">{{p.artisan}}</span>
+              </div>
+            </td>
+            <td class="text-base-content/65">{{p.service}}</td>
+            <td>
+              <span class="chip" [ngClass]="getStatusClass(p.status)">
+                {{p.status}}
+              </span>
+            </td>
+            <td class="text-right pr-6 font-bold text-base-content">{{p.price}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>

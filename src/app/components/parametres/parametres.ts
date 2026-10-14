@@ -1,8 +1,15 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
+import { LucideAngularModule } from 'lucide-angular';
 import { ArtisanService } from '../../services/artisan.service';
+import { AuthService } from '../../services/auth';
+import { MetierService } from '../../services/metier.service';
+import { ThemeService } from '../../services/theme.service';
+import { ProfileService } from '../../services/profile.service';
+import { UserService } from '../../services/user.service';
+import { initialsOf } from '../../utils/avatar';
 
 /**
  * Composant Paramètres
@@ -14,50 +21,104 @@ import { ArtisanService } from '../../services/artisan.service';
 @Component({
   selector: 'app-parametres',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, LucideAngularModule],
   templateUrl: './parametres.html'
 })
 export class Parametres implements OnInit {
 
-  /** Onglet actif ('profil' | 'notifications' | 'securite') */
+  /** Onglet actif ('profil' | 'notifications' | 'securite' | 'metiers') */
   activeTab = 'profil';
 
-  /** Injection du service artisan pour charger et mettre à jour le profil */
+  /** Injection des services */
   private artisanService = inject(ArtisanService);
+  private authService = inject(AuthService);
+  private metierService = inject(MetierService);
+  private router = inject(Router);
+  /** Thème clair / sombre (préférence d'affichage) */
+  theme = inject(ThemeService);
+  private profileService = inject(ProfileService);
+  private userService = inject(UserService);
+  isOuvrier = false;
+  ouvrierMetier = '';
+  ouvrierProfileId: string | null = null;
+  isRemovingOffre = false;
+
+  initials(name?: string): string {
+    return initialsOf(name);
+  }
 
   /**
-   * Données du profil utilisateur connecté.
-   * Valeurs par défaut avant chargement depuis le service.
+   * Données du profil.
    */
   user: any = {
-    id:    1,
-    name:  'Moussa Diop',
-    email: 'moussa.diop@example.com',
-    phone: '+221 77 123 45 67',
-    city:  'Dakar',
-    bio:   'Artisan passionné par le travail bien fait.',
-    isActive: true, // Visibilité du profil dans les listes d'artisans
+    id: null,
+    nomComplet: '',
+    email: '',
+    adresse: '',
+    ville: '',
+    role: '',
+    statut: '',
+    imageUrl: '',
     notifications: {
-      email: true,  // Notifications par email
-      sms:   false, // Notifications SMS
-      deals: true   // Offres & bons plans
+      email: true,
+      sms:   false,
+      deals: true
     }
   };
 
+  metierForm = {
+    nom: '',
+    description: '',
+    statut: 'ACTIF'
+  };
+
+  metiers: any[] = [];
+  deletingMetierId: number | string | null = null;
+  showDeleteModal = false;
+  editingMetierId: number | string | null = null;
+  isSubmittingMetier = false;
+  isDeletingMetier = false;
+
   /**
    * Initialisation : charge le profil de l'utilisateur connecté
-   * (simulé avec l'ID 1) depuis l'ArtisanService.
    */
   ngOnInit() {
-    const artisans  = this.artisanService.getArtisans();
-    const myProfile = artisans.find(a => a.id === 1);
+    const currentUser = this.authService.getUser();
 
-    if (myProfile) {
-      this.user.name     = myProfile.name;
-      this.user.city     = myProfile.city;
-      // isActive vaut true par défaut si non défini dans le profil
-      this.user.isActive = myProfile.isActive !== undefined ? myProfile.isActive : true;
+    if (currentUser) {
+      this.user.id = currentUser.id;
+      this.user.nomComplet = currentUser.nomComplet || currentUser.username || '';
+      this.user.email = currentUser.email || '';
+      this.user.adresse = currentUser.adresse || '';
+      this.user.ville = currentUser.ville || '';
+      this.user.role = currentUser.role || '';
+      this.user.statut = currentUser.statut || '';
+      this.user.imageUrl = currentUser.imageUrl || '';
+      this.isOuvrier = String(currentUser.role || '').toUpperCase().replace(/^ROLE_/, '') === 'OUVRIER';
+
+      if (currentUser.id && this.isOuvrier) {
+        this.profileService.getByUser(String(currentUser.id)).subscribe((p) => {
+          if (!p) return;
+          this.ouvrierMetier = p.nom || '';
+          this.ouvrierProfileId = p.id || null;
+          if (p.ville) this.user.ville = p.ville;
+          if (p.adresse) this.user.adresse = p.adresse;
+        });
+      }
     }
+
+    this.refreshMetiers();
+
+    this.metierService.list$.subscribe((items: any[]) => {
+      this.metiers = items || [];
+    });
+  }
+
+  refreshMetiers() {
+    this.metierService.loadAll().subscribe({
+      next: () => console.log('Liste métiers rafraîchie'),
+      error: (err) => console.error('Erreur lors du refresh des métiers', err)
+    });
   }
 
   /**
@@ -65,11 +126,167 @@ export class Parametres implements OnInit {
    * En production : remplacer alert() par une notification toast.
    */
   saveChanges() {
-    this.artisanService.updateProfile(this.user.id, {
-      name:     this.user.name,
-      city:     this.user.city,
-      isActive: this.user.isActive
+    alert('Le compte utilisateur n’a pas d’endpoint de modification (hors photo). Utilisez « Publier » pour l’offre ouvrier.');
+  }
+
+  onPhotoSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file || !this.user.id) return;
+    this.userService.uploadProfileImage(this.user.id, file).subscribe((res: any) => {
+      const imageUrl = res?.imageUrl || res?.data?.imageUrl;
+      if (imageUrl) {
+        this.user.imageUrl = imageUrl;
+        const stored = this.authService.getUser() || {};
+        localStorage.setItem('user', JSON.stringify({ ...stored, imageUrl }));
+      }
     });
-    alert('Vos modifications ont été enregistrées avec succès !');
+  }
+
+  retirerOffre() {
+    if (!this.ouvrierProfileId || this.isRemovingOffre) return;
+    if (!confirm('Retirer votre offre ? Vous disparaîtrez de l’annuaire des ouvriers.')) return;
+
+    this.isRemovingOffre = true;
+    this.profileService.delete(this.ouvrierProfileId).subscribe({
+      next: (msg) => {
+        this.isRemovingOffre = false;
+        if (msg === null) {
+          alert('Impossible de retirer l’offre. Réessayez.');
+          return;
+        }
+        this.ouvrierProfileId = null;
+        this.ouvrierMetier = '';
+        this.artisanService.loadArtisans().subscribe();
+      },
+      error: () => {
+        this.isRemovingOffre = false;
+        alert('Impossible de retirer l’offre. Réessayez.');
+      }
+    });
+  }
+
+  submitMetierForm() {
+    const nom = (this.metierForm.nom || '').trim();
+    const description = (this.metierForm.description || '').trim();
+
+    if (!nom) {
+      alert('Le nom du métier est obligatoire.');
+      return;
+    }
+
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('Tu dois être connecté pour créer ou modifier un métier.');
+      return;
+    }
+
+    const payload = {
+      nom,
+      description,
+      statut: this.metierForm.statut || 'ACTIF'
+    };
+
+    this.isSubmittingMetier = true;
+
+    const complete = () => {
+      this.isSubmittingMetier = false;
+    };
+
+    if (this.editingMetierId !== null && this.editingMetierId !== undefined) {
+      this.metierService.update(this.editingMetierId, payload).subscribe({
+        next: (res: any) => {
+          console.log('Réponse modification métier :', res);
+          if (res !== null && res !== undefined) {
+            this.resetMetierForm();
+            this.refreshMetiers();
+            alert('Métier modifié avec succès.');
+          } else {
+            alert('La modification a échoué. Vérifie ton accès admin.');
+          }
+        },
+        error: () => {
+          alert('Erreur lors de la modification du métier.');
+        },
+        complete
+      });
+      return;
+    }
+
+    this.metierService.create(payload).subscribe({
+      next: (res: any) => {
+        console.log('Réponse création métier :', res);
+        if (res) {
+          this.resetMetierForm();
+          this.refreshMetiers();
+          alert('Métier créé avec succès.');
+        } else {
+          alert('Erreur lors de la création du métier. Vérifie ton token ou reconnecte-toi.');
+        }
+      },
+      error: () => {
+        alert('Erreur lors de la création du métier.');
+      },
+      complete
+    });
+  }
+
+  resetMetierForm() {
+    this.metierForm = { nom: '', description: '', statut: 'ACTIF' };
+    this.editingMetierId = null;
+  }
+
+  editMetier(metier: any) {
+    this.editingMetierId = metier.id ?? null;
+    this.metierForm = {
+      nom: metier.nom || metier.name || metier.label || '',
+      description: metier.description || '',
+      statut: metier.statut || metier.status || 'ACTIF'
+    };
+  }
+
+  openDeleteModal(id: number | string) {
+    this.deletingMetierId = id;
+    this.showDeleteModal = true;
+  }
+
+  cancelDelete() {
+    this.showDeleteModal = false;
+    this.deletingMetierId = null;
+  }
+
+  confirmDeleteMetier() {
+    if (this.deletingMetierId === null || this.deletingMetierId === undefined) {
+      return;
+    }
+
+    const id = this.deletingMetierId;
+    this.showDeleteModal = false;
+    this.isDeletingMetier = true;
+
+    this.metierService.delete(id).subscribe({
+      next: (res: any) => {
+        console.log('Réponse suppression métier :', res);
+
+        if (res !== null && res !== undefined) {
+          this.refreshMetiers();
+          alert('Métier supprimé avec succès.');
+        } else {
+          alert('La suppression a échoué. Vérifie ton accès admin.');
+        }
+      },
+      error: () => {
+        alert('Erreur lors de la suppression du métier.');
+      },
+      complete: () => {
+        this.isDeletingMetier = false;
+        this.deletingMetierId = null;
+      }
+    });
+  }
+
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 }

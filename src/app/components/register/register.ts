@@ -2,6 +2,7 @@ import { Component, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
+import { LucideAngularModule } from 'lucide-angular';
 import { AuthService } from '../../services/auth';
 
 // Validateur pour détecter les erreurs courantes de frappe dans l'email
@@ -36,7 +37,7 @@ export function emailTypoValidator(control: AbstractControl): ValidationErrors |
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, LucideAngularModule],
   templateUrl: './register.html'
 })
 export class Register {

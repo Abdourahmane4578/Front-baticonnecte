@@ -3,12 +3,13 @@ import { Component, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router'; // Ajout de Router
+import { LucideAngularModule } from 'lucide-angular';
 import { AuthService } from '../../services/auth'; // Importe ton service d'auth
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, LucideAngularModule],
   templateUrl: './login.html'
 })
 export class Login {

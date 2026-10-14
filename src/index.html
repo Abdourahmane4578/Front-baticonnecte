@@ -1,11 +1,28 @@
 <!doctype html>
-<html lang="en"  data-theme="light">
+<html lang="fr">
 <head>
   <meta charset="utf-8">
-  <title>FrontBatiment</title>
+  <title>BatiConnect — Trouvez un artisan de confiance en Guinée</title>
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="BatiConnect met en relation particuliers et professionnels du bâtiment : trouvez un artisan vérifié, publiez une annonce, demandez un devis.">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#0a66c2">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#111827">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <!-- Applique le thème mémorisé avant le premier rendu (évite le flash clair/sombre) -->
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem('bc-theme');
+        if (t === 'light') document.documentElement.setAttribute('data-theme', 'baticonnect');
+        else if (t === 'dark') document.documentElement.setAttribute('data-theme', 'baticonnect-dark');
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
   <app-root></app-root>

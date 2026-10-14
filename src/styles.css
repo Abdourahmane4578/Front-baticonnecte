@@ -1,17 +1,629 @@
 @import "tailwindcss";
-@plugin "daisyui";
 
+/* =====================================================================
+   BatiConnect — Design system
+   1. Thème DaisyUI (couleurs sémantiques utilisées par Tailwind : primary, base-*, …)
+   2. Tokens Tailwind (polices, ombres)
+   3. Base (fond de page, typographie, focus, sélection, scrollbar)
+   4. Composants réutilisables (cartes, boutons, champs, badges, libellés)
+   ===================================================================== */
+
+/* ---------- 1. Thème DaisyUI ---------- */
+@plugin "daisyui" {
+  themes: baticonnect --default, baticonnect-dark --prefersdark;
+}
+
+@plugin "daisyui/theme" {
+  name: "baticonnect";
+  default: true;
+  prefersdark: false;
+  color-scheme: light;
+
+  /* Surfaces & texte */
+  --color-base-100: oklch(100% 0 0);            /* cartes, panneaux */
+  --color-base-200: oklch(97.4% 0.006 250);     /* fond de page */
+  --color-base-300: oklch(92.5% 0.01 250);      /* bordures, séparateurs */
+  --color-base-content: oklch(22% 0.03 262);    /* texte principal */
+
+  /* Marque */
+  --color-primary: oklch(50% 0.16 253);         /* bleu BatiConnect (≈ #0a66c2) */
+  --color-primary-content: oklch(99% 0 0);
+  --color-secondary: oklch(68% 0.14 232);       /* bleu ciel */
+  --color-secondary-content: oklch(20% 0.05 232);
+  --color-accent: oklch(80% 0.16 80);           /* ocre chantier */
+  --color-accent-content: oklch(28% 0.07 70);
+  --color-neutral: oklch(26% 0.03 262);
+  --color-neutral-content: oklch(98% 0 0);
+
+  /* États */
+  --color-info: oklch(68% 0.14 232);
+  --color-info-content: oklch(98% 0 0);
+  --color-success: oklch(64% 0.17 155);
+  --color-success-content: oklch(98% 0 0);
+  --color-warning: oklch(78% 0.16 75);
+  --color-warning-content: oklch(28% 0.07 70);
+  --color-error: oklch(60% 0.21 25);
+  --color-error-content: oklch(98% 0 0);
+
+  /* Formes */
+  --radius-selector: 0.5rem;
+  --radius-field: 0.75rem;    /* boutons, champs */
+  --radius-box: 1.25rem;      /* cartes */
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
+
+/* Thème sombre : mêmes teintes de marque, surfaces bleu-nuit */
+@plugin "daisyui/theme" {
+  name: "baticonnect-dark";
+  default: false;
+  prefersdark: true;
+  color-scheme: dark;
+
+  /* Surfaces & texte */
+  --color-base-100: oklch(23% 0.022 262);      /* cartes, panneaux */
+  --color-base-200: oklch(18.5% 0.02 262);     /* fond de page */
+  --color-base-300: oklch(30% 0.024 262);      /* bordures, séparateurs */
+  --color-base-content: oklch(94% 0.01 250);   /* texte principal */
+
+  /* Marque (légèrement éclaircie pour le contraste sur fond sombre) */
+  --color-primary: oklch(66% 0.15 253);
+  --color-primary-content: oklch(14% 0.03 262);
+  --color-secondary: oklch(74% 0.13 232);
+  --color-secondary-content: oklch(16% 0.04 232);
+  --color-accent: oklch(82% 0.15 80);
+  --color-accent-content: oklch(26% 0.06 70);
+  --color-neutral: oklch(92% 0.01 250);
+  --color-neutral-content: oklch(18% 0.02 262);
+
+  /* États */
+  --color-info: oklch(74% 0.13 232);
+  --color-info-content: oklch(16% 0.04 232);
+  --color-success: oklch(72% 0.16 155);
+  --color-success-content: oklch(16% 0.05 155);
+  --color-warning: oklch(82% 0.15 75);
+  --color-warning-content: oklch(26% 0.06 70);
+  --color-error: oklch(70% 0.19 25);
+  --color-error-content: oklch(16% 0.05 25);
+
+  /* Formes (identiques au thème clair) */
+  --radius-selector: 0.5rem;
+  --radius-field: 0.75rem;
+  --radius-box: 1.25rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
+
+/* ---------- 2. Tokens Tailwind ---------- */
 @theme {
-  --color-linkedin-blue: #0a66c2;
-  --color-linkedin-blue-hover: #004182;
-  --color-linkedin-bg: #f3f2ef;
-  --color-linkedin-border: #e0dfdc;
-  --color-linkedin-text: #191919;
-  --color-linkedin-text-muted: #666666;
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Plus Jakarta Sans", "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  --shadow-card: 0 1px 2px var(--shadow-ink-a), 0 10px 30px -14px var(--shadow-ink-b);
+  --shadow-card-hover: 0 2px 4px var(--shadow-ink-a), 0 20px 45px -18px var(--shadow-ink-c);
+  --shadow-float: 0 24px 60px -20px var(--shadow-ink-d);
+}
+
+/* Encre des ombres : adaptée au thème (plus marquée en sombre) */
+:root, [data-theme="baticonnect"] {
+  --shadow-ink-a: rgb(15 23 42 / 0.04);
+  --shadow-ink-b: rgb(15 23 42 / 0.12);
+  --shadow-ink-c: rgb(15 23 42 / 0.18);
+  --shadow-ink-d: rgb(15 23 42 / 0.22);
+  --grid-ink: rgb(15 23 42 / 0.035);
+}
+[data-theme="baticonnect-dark"] {
+  --shadow-ink-a: rgb(0 0 0 / 0.25);
+  --shadow-ink-b: rgb(0 0 0 / 0.45);
+  --shadow-ink-c: rgb(0 0 0 / 0.55);
+  --shadow-ink-d: rgb(0 0 0 / 0.6);
+  --grid-ink: rgb(255 255 255 / 0.04);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --shadow-ink-a: rgb(0 0 0 / 0.25);
+    --shadow-ink-b: rgb(0 0 0 / 0.45);
+    --shadow-ink-c: rgb(0 0 0 / 0.55);
+    --shadow-ink-d: rgb(0 0 0 / 0.6);
+    --grid-ink: rgb(255 255 255 / 0.04);
+  }
+}
+
+/* ---------- 3. Base ---------- */
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+html, body {
+  height: 100%;
 }
 
 body {
-  background-color: var(--color-linkedin-bg);
-  color: var(--color-linkedin-text);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  margin: 0;
+  background-color: var(--color-base-200);
+  color: var(--color-base-content);
+  transition: background-color 0.25s ease, color 0.25s ease;
+  font-family: var(--font-sans);
+  font-feature-settings: "cv11", "ss01", "ss03";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.55;
+}
+
+/* Fond ambiant : halo primaire + halo accent + trame "plan d'architecte" fondue */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(900px 520px at 8% -8%, color-mix(in oklab, var(--color-primary) 11%, transparent), transparent 62%),
+    radial-gradient(760px 460px at 104% 102%, color-mix(in oklab, var(--color-accent) 12%, transparent), transparent 62%),
+    linear-gradient(to right, var(--grid-ink) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-ink) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 36px 36px, 36px 36px;
+  mask-image: linear-gradient(to bottom, black 0%, black 35%, transparent 85%);
+  -webkit-mask-image: linear-gradient(to bottom, black 0%, black 35%, transparent 85%);
+}
+
+app-root {
+  display: block;
+  min-height: 100vh;
+}
+
+.site-shell {
+  min-height: 100vh;
+}
+
+.site-main {
+  position: relative;
+  z-index: 1;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+h1, h2, h3, h4, .font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.015em;
+}
+
+::selection {
+  background: color-mix(in oklab, var(--color-primary) 22%, transparent);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+:where(button, [role="button"], a, input, select, textarea):focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px color-mix(in oklab, var(--color-primary) 22%, transparent);
+  border-radius: var(--radius-field);
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: color-mix(in oklab, var(--color-base-content) 22%, transparent);
+  border-radius: 999px;
+  border: 2px solid var(--color-base-200);
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Icônes Lucide : héritent de la couleur courante, alignées sur le texte */
+lucide-icon, lucide-angular, i-lucide, span-lucide {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  line-height: 0;
+}
+
+lucide-icon > svg, lucide-angular > svg, i-lucide > svg, span-lucide > svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* ---------- 4. Composants ---------- */
+@layer components {
+
+  /* --- Mise en page --- */
+  .page {
+    max-width: 80rem;
+    margin-inline: auto;
+    padding: 2rem 1rem 5rem;
+  }
+  @media (min-width: 640px) { .page { padding-inline: 1.5rem; } }
+  @media (min-width: 1024px) { .page { padding-inline: 2rem; padding-top: 2.5rem; } }
+
+  .page-narrow { max-width: 64rem; }
+  .page-tight  { max-width: 48rem; }
+
+  .page-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.75rem, 1.4rem + 1.4vw, 2.5rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    color: var(--color-base-content);
+  }
+
+  .page-subtitle {
+    margin-top: 0.5rem;
+    font-size: 0.95rem;
+    color: color-mix(in oklab, var(--color-base-content) 62%, transparent);
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.3rem 0.7rem;
+    border-radius: 999px;
+    background: color-mix(in oklab, var(--color-primary) 9%, transparent);
+    color: var(--color-primary);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* --- Cartes --- */
+  .card-bc {
+    background: var(--color-base-100);
+    border: 1px solid color-mix(in oklab, var(--color-base-300) 85%, transparent);
+    border-radius: var(--radius-box);
+    box-shadow: var(--shadow-card);
+  }
+
+  .card-bc-hover {
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  }
+  .card-bc-hover:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-card-hover);
+    border-color: color-mix(in oklab, var(--color-primary) 25%, var(--color-base-300));
+  }
+
+  .card-glass {
+    background: color-mix(in oklab, var(--color-base-100) 78%, transparent);
+    border: 1px solid color-mix(in oklab, var(--color-base-100) 70%, transparent);
+    border-radius: var(--radius-box);
+    box-shadow: var(--shadow-card);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
+
+  .soft-row {
+    background: color-mix(in oklab, var(--color-base-200) 70%, var(--color-base-100));
+    border: 1px solid color-mix(in oklab, var(--color-base-300) 70%, transparent);
+    border-radius: var(--radius-field);
+  }
+
+  /* --- Boutons (surcouche DaisyUI) --- */
+  .btn {
+    font-weight: 600;
+    letter-spacing: 0;
+    text-transform: none;
+    transition: transform 0.12s ease, box-shadow 0.18s ease, background-color 0.18s ease,
+                border-color 0.18s ease, color 0.18s ease, opacity 0.18s ease;
+  }
+  .btn:active:not(:disabled) { transform: scale(0.98); }
+
+  .btn-primary {
+    box-shadow: 0 10px 24px -10px color-mix(in oklab, var(--color-primary) 70%, transparent);
+  }
+  .btn-primary:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 14px 30px -10px color-mix(in oklab, var(--color-primary) 80%, transparent);
+  }
+
+  .btn-outline {
+    background: var(--color-base-100);
+    border-color: var(--color-base-300);
+    color: var(--color-base-content);
+  }
+  .btn-outline:hover:not(:disabled) {
+    background: var(--color-base-200);
+    border-color: color-mix(in oklab, var(--color-base-content) 25%, var(--color-base-300));
+    color: var(--color-base-content);
+  }
+
+  .btn-ghost { color: color-mix(in oklab, var(--color-base-content) 72%, transparent); }
+  .btn-ghost:hover:not(:disabled) {
+    background: color-mix(in oklab, var(--color-base-content) 6%, transparent);
+    color: var(--color-base-content);
+  }
+
+  .btn-soft {
+    background: color-mix(in oklab, var(--color-primary) 9%, transparent);
+    border-color: transparent;
+    color: var(--color-primary);
+  }
+  .btn-soft:hover:not(:disabled) {
+    background: color-mix(in oklab, var(--color-primary) 15%, transparent);
+    border-color: transparent;
+    color: var(--color-primary);
+  }
+
+  .btn-danger-soft {
+    background: color-mix(in oklab, var(--color-error) 9%, transparent);
+    border-color: transparent;
+    color: var(--color-error);
+  }
+  .btn-danger-soft:hover:not(:disabled) {
+    background: color-mix(in oklab, var(--color-error) 15%, transparent);
+    border-color: transparent;
+  }
+
+  .btn-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0;
+    border-radius: 999px;
+  }
+
+  /* --- Champs --- */
+  .field-label {
+    display: block;
+    margin-bottom: 0.45rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: color-mix(in oklab, var(--color-base-content) 78%, transparent);
+  }
+
+  .field-hint {
+    margin-top: 0.4rem;
+    font-size: 0.75rem;
+    color: color-mix(in oklab, var(--color-base-content) 55%, transparent);
+  }
+
+  .field-error {
+    display: block;
+    margin-top: 0.4rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-error);
+  }
+
+  .input, .select, .textarea, .file-input {
+    background: var(--color-base-100);
+    border-color: var(--color-base-300);
+    color: var(--color-base-content);
+    transition: border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
+  }
+  .input::placeholder, .textarea::placeholder {
+    color: color-mix(in oklab, var(--color-base-content) 40%, transparent);
+  }
+  .input:focus, .input:focus-within,
+  .select:focus, .select:focus-within,
+  .textarea:focus, .textarea:focus-within,
+  .file-input:focus, .file-input:focus-within {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 4px color-mix(in oklab, var(--color-primary) 14%, transparent);
+  }
+  .input-error, .input-error:focus, .input-error:focus-within {
+    border-color: var(--color-error);
+    box-shadow: 0 0 0 4px color-mix(in oklab, var(--color-error) 14%, transparent);
+  }
+
+  /* Champ avec icône à gauche */
+  .input-icon {
+    position: relative;
+  }
+  .input-icon > lucide-icon {
+    position: absolute;
+    left: 0.9rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1.1rem;
+    height: 1.1rem;
+    color: color-mix(in oklab, var(--color-base-content) 42%, transparent);
+    pointer-events: none;
+  }
+  .input-icon > .input, .input-icon > .select {
+    padding-left: 2.75rem;
+  }
+
+  /* --- Badges / puces --- */
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.7rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1;
+    background: color-mix(in oklab, var(--color-base-200) 80%, var(--color-base-100));
+    border: 1px solid var(--color-base-300);
+    color: color-mix(in oklab, var(--color-base-content) 75%, transparent);
+  }
+  .chip-primary {
+    background: color-mix(in oklab, var(--color-primary) 10%, transparent);
+    border-color: color-mix(in oklab, var(--color-primary) 18%, transparent);
+    color: var(--color-primary);
+  }
+  .chip-success {
+    background: color-mix(in oklab, var(--color-success) 12%, transparent);
+    border-color: color-mix(in oklab, var(--color-success) 25%, transparent);
+    color: color-mix(in oklab, var(--color-success) 75%, black);
+  }
+  .chip-warning {
+    background: color-mix(in oklab, var(--color-warning) 18%, transparent);
+    border-color: color-mix(in oklab, var(--color-warning) 40%, transparent);
+    color: color-mix(in oklab, var(--color-warning) 55%, black);
+  }
+  .chip-error {
+    background: color-mix(in oklab, var(--color-error) 10%, transparent);
+    border-color: color-mix(in oklab, var(--color-error) 25%, transparent);
+    color: var(--color-error);
+  }
+
+  /* Carré d'icône coloré */
+  .icon-box {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 0.875rem;
+    background: color-mix(in oklab, var(--color-primary) 10%, transparent);
+    color: var(--color-primary);
+    flex-shrink: 0;
+  }
+  .icon-box > lucide-icon { width: 1.25rem; height: 1.25rem; }
+  .icon-box-accent {
+    background: color-mix(in oklab, var(--color-accent) 22%, transparent);
+    color: color-mix(in oklab, var(--color-accent) 55%, black);
+  }
+  .icon-box-success {
+    background: color-mix(in oklab, var(--color-success) 14%, transparent);
+    color: color-mix(in oklab, var(--color-success) 75%, black);
+  }
+  .icon-box-secondary {
+    background: color-mix(in oklab, var(--color-secondary) 16%, transparent);
+    color: color-mix(in oklab, var(--color-secondary) 70%, black);
+  }
+
+  /* Avatar */
+  .avatar-bc {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: var(--color-base-200);
+    border: 1px solid var(--color-base-300);
+    color: color-mix(in oklab, var(--color-base-content) 55%, transparent);
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  /* Lien de navigation */
+  .nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.85rem;
+    border-radius: 0.65rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: color-mix(in oklab, var(--color-base-content) 68%, transparent);
+    transition: background-color 0.15s ease, color 0.15s ease;
+  }
+  .nav-link:hover { color: var(--color-base-content); background: color-mix(in oklab, var(--color-base-content) 5%, transparent); }
+  .nav-link.active { background: var(--color-base-100); color: var(--color-primary); box-shadow: 0 1px 2px rgb(15 23 42 / 0.06); }
+  .nav-link > lucide-icon { width: 1rem; height: 1rem; }
+
+  /* Lien discret */
+  .link-bc {
+    color: var(--color-primary);
+    font-weight: 600;
+    transition: color 0.15s ease;
+  }
+  .link-bc:hover { color: color-mix(in oklab, var(--color-primary) 80%, black); text-decoration: underline; text-underline-offset: 3px; }
+
+  /* État vide */
+  .empty-state {
+    padding: 4rem 1.5rem;
+    text-align: center;
+    background: var(--color-base-100);
+    border: 1px dashed var(--color-base-300);
+    border-radius: var(--radius-box);
+  }
+
+  /* Toast */
+  .toast-bc {
+    position: fixed;
+    right: 1.25rem;
+    top: 5.5rem;
+    z-index: 60;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.8rem 1rem;
+    border-radius: var(--radius-field);
+    background: var(--color-neutral);
+    color: var(--color-neutral-content);
+    font-size: 0.875rem;
+    font-weight: 600;
+    box-shadow: var(--shadow-float);
+  }
+
+  /* Modale */
+  .modal-backdrop-bc {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    background: rgb(15 23 42 / 0.45);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+  .modal-panel-bc {
+    width: 100%;
+    background: var(--color-base-100);
+    border: 1px solid var(--color-base-300);
+    border-radius: var(--radius-box);
+    box-shadow: var(--shadow-float);
+  }
+
+  /* Table */
+  .table-bc th {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: color-mix(in oklab, var(--color-base-content) 50%, transparent);
+    background: transparent;
+    border-bottom: 1px solid var(--color-base-300);
+  }
+  .table-bc td { border-bottom: 1px solid color-mix(in oklab, var(--color-base-300) 70%, transparent); }
+  .table-bc tr:last-child td { border-bottom: none; }
+}
+
+/* Animations légères */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-up { animation: fade-up 0.35s ease both; }
+
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-8px); }
+}
+.animate-float-slow { animation: float-slow 5s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }

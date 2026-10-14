@@ -1,14 +1,14 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { BehaviorSubject, Observable, of } from 'rxjs';
+import { tap, catchError, map } from 'rxjs/operators';
+import { API_URL } from '../config/config';
 
 /**
  * JobService
  * Service centralisé pour la gestion des annonces du Job Board.
- * Utilise un BehaviorSubject pour maintenir un état réactif partagé
- * entre tous les composants abonnés (JobBoard, Publish, etc.).
- *
- * En production, les méthodes CRUD devront appeler l'API backend
- * à la place des manipulations locales sur le tableau.
+ * Connecté à l'API backend GET /api/v1/posts?page=1&limit=10 avec fallback réactif.
  */
 @Injectable({
   providedIn: 'root'
@@ -16,53 +16,247 @@ import { BehaviorSubject } from 'rxjs';
 export class JobService {
 
   /**
-   * Données de démonstration initiales pour le Job Board.
-   * Chaque annonce contient les informations du post, les interactions
-   * sociales (likes, commentaires) et les données de l'auteur.
-   * À remplacer par un appel GET /api/v1/annonces en production.
-   */
-  private initialAnnonces = [
-    {
-      id: 1, titre: 'Rénovation électrique appartement 3 pièces', metier: 'Electricien',
-      ville: 'Conakry', description: 'Besoin de refaire toute l\'installation électrique d\'un appartement de 60m2. Matériel non fourni.',
-      budget: '2.500.000', urgence: 'Dans le mois', date: 'Il y a 2 heures',
-      client: 'Alpha Barry', authorId: 2, likes: 12, likedByMe: false,
-      comments: [{ id: 1, author: 'Moussa Diop', text: 'Je suis disponible, je vous contacte.' }]
-    },
-    {
-      id: 2, titre: 'Fuite d\'eau sous l\'évier', metier: 'Plombier',
-      ville: 'Conakry', description: 'Grosse fuite d\'eau sous l\'évier de la cuisine, besoin d\'une intervention rapide.',
-      budget: '150.000', urgence: 'Urgent', date: 'Il y a 5 heures',
-      client: 'Fatoumata Camara', authorId: 3, likes: 5, likedByMe: true, comments: []
-    },
-    {
-      id: 3, titre: 'Peinture façade maison', metier: 'Peintre',
-      ville: 'Kindia', description: 'Peinture extérieure pour une maison R+1. Je fournis la peinture, je cherche juste la main d\'œuvre.',
-      budget: '1.200.000', urgence: 'Dès que possible', date: 'Hier',
-      client: 'Moi (Client)', authorId: 1, likes: 0, likedByMe: false, comments: [] // ← Simule un post de l'utilisateur connecté
-    },
-    {
-      id: 4, titre: 'Installation de 2 climatiseurs', metier: 'Frigoriste',
-      ville: 'Conakry', description: 'J\'ai acheté 2 climatiseurs split, j\'ai besoin d\'un professionnel pour l\'installation.',
-      budget: '400.000', urgence: 'Dans le mois', date: 'Hier',
-      client: 'Mariam Sylla', authorId: 5, likes: 24, likedByMe: false, comments: []
-    }
-  ];
-
-  /**
    * Source de vérité réactive pour la liste des annonces.
-   * BehaviorSubject émet la dernière valeur aux nouveaux abonnés.
+   * On laisse la liste vide au démarrage pour utiliser uniquement les données de la base.
    */
-  private annoncesSubject = new BehaviorSubject<any[]>(this.initialAnnonces);
+  private annoncesSubject = new BehaviorSubject<any[]>([]);
 
   /** Observable public exposé aux composants pour s'abonner aux changements */
   annonces$ = this.annoncesSubject.asObservable();
 
-  constructor() { }
+  constructor(
+    private http: HttpClient,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {
+    // Charge automatiquement les posts uniquement si l'utilisateur est connecté
+    // et possède un token valide. Sinon on évite le 401 au démarrage.
+    if (isPlatformBrowser(this.platformId) && this.getToken()) {
+      this.fetchPosts().subscribe();
+    }
+  }
+
+  private getToken(): string | null {
+    if (!isPlatformBrowser(this.platformId)) {
+      return null;
+    }
+    return localStorage.getItem('token');
+  }
+
+  /**
+   * Récupère la liste des posts depuis l'API GET /api/v1/posts?page=1&limit=10
+   * @param page Numéro de la page (par défaut 1)
+   * @param limit Nombre d'éléments par page (par défaut 10)
+   */
+  fetchPosts(page: number = 1, limit: number = 10): Observable<any> {
+    const token = this.getToken();
+
+    if (!token) {
+      this.annoncesSubject.next([]);
+      return of(null);
+    }
+
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+
+    // Le front compte les pages à partir de 1, la pagination Spring du backend à partir de 0.
+    const backendPage = Math.max(0, page - 1);
+
+    return this.http.get<any>(`${API_URL}/posts?page=${backendPage}&limit=${limit}`, { headers }).pipe(
+      tap((response: any) => {
+        let items: any[] = [];
+        if (response && Array.isArray(response.data)) {
+          items = response.data;
+        } else if (Array.isArray(response)) {
+          items = response;
+        }
+
+        const existing = this.getAnnonces();
+
+        if (items.length > 0) {
+          const formatted = items.map((p: any) => this.mapPostToAnnonce(p));
+          const merged = [...formatted, ...existing.filter((x: any) => !formatted.some((y: any) => y.id === x.id))];
+          this.annoncesSubject.next(merged);
+        } else {
+          this.annoncesSubject.next(existing.length > 0 ? existing : []);
+        }
+      }),
+      catchError((err) => {
+        if (err?.status === 401) {
+          if (isPlatformBrowser(this.platformId)) {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+          }
+          this.annoncesSubject.next([]);
+          return of(null);
+        }
+
+        console.error("Erreur lors de la récupération des posts depuis l'API :", err);
+        this.annoncesSubject.next(this.getAnnonces().length > 0 ? this.getAnnonces() : []);
+        return of(null);
+      })
+    );
+  }
+
+  /**
+   * Retourne un post déjà présent dans le store local si disponible.
+   */
+  getLocalPostById(id: number | string): any {
+    return this.getAnnonces().find((item: any) => String(item.id) === String(id)) || null;
+  }
+
+  /**
+   * Récupère un post précis par son identifiant.
+   * Endpoint backend : GET /api/v1/posts/{id}
+   */
+  getPostById(id: number | string): Observable<any> {
+    const cached = this.getLocalPostById(id);
+    if (cached) {
+      return of(cached);
+    }
+
+    if (!id) {
+      return of(null);
+    }
+
+    const token = this.getToken();
+    const headers = token ? new HttpHeaders({ Authorization: `Bearer ${token}` }) : new HttpHeaders();
+
+    return this.http.get<any>(`${API_URL}/posts/${id}`, { headers }).pipe(
+      map((response: any) => {
+        const payload = response && response.data ? response.data : response;
+        const item = payload && payload.post ? payload.post : payload;
+
+        if (!item || typeof item !== 'object') {
+          return this.getLocalPostById(id);
+        }
+
+        const normalized = this.mapPostToAnnonce(item);
+        const current = this.getAnnonces();
+        const existingIndex = current.findIndex((entry: any) => String(entry.id) === String(normalized.id));
+
+        if (existingIndex >= 0) {
+          const updated = [...current];
+          updated[existingIndex] = normalized;
+          this.annoncesSubject.next(updated);
+        } else {
+          this.annoncesSubject.next([normalized, ...current]);
+        }
+
+        return normalized;
+      }),
+      catchError((err) => {
+        console.error(`Erreur lors de la récupération du post ${id} :`, err);
+        const fallback = this.getLocalPostById(id);
+        if (err?.status === 401) {
+          if (isPlatformBrowser(this.platformId)) {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+          }
+        }
+        return of(fallback);
+      })
+    );
+  }
+
+  /**
+   * Crée un nouveau post via l'API POST /api/v1/posts
+   * Transmet un FormData avec (titre, description, userId, file)
+   * et reçoit la réponse : { id, titre, description, image, userId }
+   */
+  createPost(data: { titre: string; description: string; file?: File }): Observable<any> {
+    let userId = '';
+    try {
+      const userStr = isPlatformBrowser(this.platformId) ? localStorage.getItem('user') : null;
+      if (userStr) {
+        const user = JSON.parse(userStr);
+        userId = user.id || user.userId || '';
+      }
+    } catch (e) {
+      console.error("Erreur de récupération de l'utilisateur connecté :", e);
+    }
+
+    const formData = new FormData();
+    formData.append('titre', data.titre ?? '');
+    formData.append('description', data.description ?? '');
+    if (userId) {
+      formData.append('userId', userId);
+    }
+
+    if (data.file) {
+      formData.append('file', data.file, data.file.name);
+    } else {
+      // Génère une image PNG transparente 1x1 si l'utilisateur ne téléverse pas de fichier
+      const dummyBase64 = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
+      const byteChars = atob(dummyBase64);
+      const byteNumbers = new Array(byteChars.length);
+      for (let i = 0; i < byteChars.length; i++) {
+        byteNumbers[i] = byteChars.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { type: 'image/png' });
+      formData.append('file', blob, 'default.png');
+    }
+
+    const token = this.getToken();
+    const headers = new HttpHeaders({
+      Authorization: token ? `Bearer ${token}` : ''
+    });
+
+    return this.http.post<any>(`${API_URL}/posts`, formData, { headers }).pipe(
+      tap((response: any) => {
+        const payload = response && typeof response === 'object' ? response : {};
+        const normalizedResponse = {
+          ...payload,
+          titre: payload.titre ?? data.titre ?? 'Annonce',
+          description: payload.description ?? data.description ?? 'Aucune description fournie.',
+          image: payload.image ?? payload.imageUrl ?? null,
+          imageUrl: payload.imageUrl ?? payload.image ?? null,
+          userId: payload.userId ?? userId,
+          fullName: payload.fullName ?? ''
+        };
+
+        const newAnnonce = this.mapPostToAnnonce(normalizedResponse);
+        const currentList = this.getAnnonces();
+        this.annoncesSubject.next([newAnnonce, ...currentList]);
+      }),
+      catchError((err) => {
+        console.error("Erreur lors de la création du post via l'API :", err);
+        // Fallback local si l'API échoue
+        this.addAnnonce(data);
+        return of(null);
+      })
+    );
+  }
+
+  /**
+   * Mappe un post retourné par l'API backend vers le format attendu par les composants
+   */
+  private mapPostToAnnonce(p: any): any {
+    const imageUrl = p?.imageUrl ?? p?.image ?? null;
+    const fullName = p?.fullName ?? p?.client ?? '';
+
+    return {
+      id: p?.id ?? 0,
+      titre: p?.titre ?? 'Annonce',
+      description: p?.description ?? '',
+      imageUrl,
+      image: imageUrl,
+      userId: p?.userId ?? p?.authorId ?? 0,
+      authorId: p?.userId ?? p?.authorId ?? 0,
+      fullName,
+      client: fullName,
+      createdAt: p?.createdAt ?? null,
+      updatedAt: p?.updatedAt ?? null,
+      date: p?.createdAt ? new Date(p.createdAt).toLocaleDateString() : (p?.date ?? ''),
+      likes: 0,
+      likedByMe: false,
+      comments: p?.comments ?? []
+    };
+  }
 
   /**
    * Retourne la valeur instantanée de la liste des annonces (snapshot).
-   * Utile pour les opérations qui nécessitent la liste courante sans s'abonner.
    */
   getAnnonces() {
     return this.annoncesSubject.value;
@@ -70,7 +264,6 @@ export class JobService {
 
   /**
    * Ajoute une nouvelle annonce en tête de liste.
-   * Complète l'annonce avec les métadonnées système (id, date, client simulé, etc.)
    * @param annonce - Les données du formulaire de publication
    */
   addAnnonce(annonce: any) {
@@ -80,34 +273,97 @@ export class JobService {
       ...annonce,
       id:         currentList.length + 1,
       date:       'À l\'instant',
-      client:     'Moi (Client)', // Simule l'utilisateur connecté
-      authorId:   1,              // ID simulé pour 'Moi' (à remplacer par l'ID réel)
+      client:     'Moi (Client)',
+      authorId:   1,
       likes:      0,
       likedByMe:  false,
       comments:   []
     };
 
-    // Insère la nouvelle annonce au début de la liste
     this.annoncesSubject.next([newAnnonce, ...currentList]);
   }
 
   /**
-   * Supprime une annonce par son identifiant.
-   * @param id - L'identifiant de l'annonce à supprimer
+   * Supprime une annonce depuis l'API backend.
+   * Endpoint backend : DELETE /api/v1/posts/{id}
    */
-  deleteAnnonce(id: number) {
-    const currentList  = this.getAnnonces();
-    const updatedList  = currentList.filter(a => a.id !== id);
-    this.annoncesSubject.next(updatedList);
+  deleteAnnonce(id: number | string): Observable<any> {
+    const token = this.getToken();
+
+    if (!id) {
+      return of(null);
+    }
+
+    const headers = token ? new HttpHeaders({ Authorization: `Bearer ${token}` }) : new HttpHeaders();
+
+    return this.http.delete<any>(`${API_URL}/posts/${id}`, { headers, responseType: 'text' as 'json' }).pipe(
+      map((response: any) => {
+        const currentList = this.getAnnonces();
+        const updatedList = currentList.filter((a: any) => String(a.id) !== String(id));
+        this.annoncesSubject.next(updatedList);
+        return response;
+      }),
+      catchError((err) => {
+        console.error(`Erreur suppression post ${id} :`, err);
+        const currentList = this.getAnnonces();
+        const updatedList = currentList.filter((a: any) => String(a.id) !== String(id));
+        this.annoncesSubject.next(updatedList);
+        return of({ success: true, localOnly: true });
+      })
+    );
   }
 
   /**
-   * Met à jour les champs d'une annonce existante (titre, description, budget).
-   * Fusionne les nouvelles données avec l'objet existant via le spread operator.
-   * @param id   - L'identifiant de l'annonce à modifier
-   * @param data - Les nouvelles données à fusionner (champs partiels acceptés)
+   * Modifie un post via l'API PATCH /api/v1/posts/{id} (multipart : titre, description, file).
+   * Seul l'auteur du post est autorisé côté backend. Le champ `file` est obligatoire
+   * pour Spring mais ignoré s'il est vide : on envoie un Blob vide quand il n'y a pas de nouvelle image.
+   * En cas d'échec, la modification est appliquée localement (editAnnonce).
    */
-  editAnnonce(id: number, data: any) {
+  updatePost(id: number | string, data: { titre?: string; description?: string; file?: File }): Observable<any> {
+    if (!id) {
+      return of(null);
+    }
+
+    const formData = new FormData();
+    if (data.titre != null) formData.append('titre', data.titre);
+    if (data.description != null) formData.append('description', data.description);
+    if (data.file) {
+      formData.append('file', data.file, data.file.name);
+    } else {
+      formData.append('file', new Blob([]), 'empty');
+    }
+
+    const token = this.getToken();
+    const headers = token ? new HttpHeaders({ Authorization: `Bearer ${token}` }) : new HttpHeaders();
+
+    return this.http.patch<any>(`${API_URL}/posts/${id}`, formData, { headers }).pipe(
+      tap((response: any) => {
+        const payload = response?.data ?? response;
+        if (payload && typeof payload === 'object') {
+          const current = this.getAnnonces();
+          const existing = current.find((a: any) => String(a.id) === String(id)) || {};
+          const normalized = this.mapPostToAnnonce({ ...existing, ...payload });
+          this.annoncesSubject.next(
+            current.map((a: any) => (String(a.id) === String(id) ? { ...a, ...normalized } : a))
+          );
+        } else {
+          this.editAnnonce(id, data);
+        }
+      }),
+      catchError((err) => {
+        console.error(`Erreur modification post ${id} :`, err);
+        this.editAnnonce(id, data);
+        return of(null);
+      })
+    );
+  }
+
+  /**
+   * Met à jour les champs d'une annonce existante (état local uniquement).
+   * @param id   - L'identifiant de l'annonce à modifier
+   * @param data - Les nouvelles données à fusionner
+   */
+  editAnnonce(id: number | string, data: any) {
     const currentList = this.getAnnonces();
     const updatedList = currentList.map(a => a.id === id ? { ...a, ...data } : a);
     this.annoncesSubject.next(updatedList);
@@ -115,18 +371,17 @@ export class JobService {
 
   /**
    * Ajoute un commentaire à une annonce.
-   * Génère un ID unique via Date.now() pour chaque nouveau commentaire.
    * @param postId - L'identifiant de l'annonce à commenter
    * @param author - Le nom de l'auteur du commentaire
    * @param text   - Le contenu du commentaire
    */
-  addComment(postId: number, author: string, text: string) {
+  addComment(postId: number | string, author: string, text: string) {
     const currentList = this.getAnnonces();
     const updatedList = currentList.map(a => {
       if (a.id === postId) {
         return {
           ...a,
-          comments: [...a.comments, { id: Date.now(), author, text }]
+          comments: [...(a.comments || []), { id: Date.now(), author, text }]
         };
       }
       return a;
@@ -136,10 +391,9 @@ export class JobService {
 
   /**
    * Bascule le like d'un post pour l'utilisateur connecté.
-   * Incrémente ou décrémente le compteur de likes selon l'état actuel.
    * @param postId - L'identifiant du post à liker/unliker
    */
-  toggleLike(postId: number) {
+  toggleLike(postId: number | string) {
     const currentList = this.getAnnonces();
     const updatedList = currentList.map(a => {
       if (a.id === postId) {
@@ -155,3 +409,4 @@ export class JobService {
     this.annoncesSubject.next(updatedList);
   }
 }
+

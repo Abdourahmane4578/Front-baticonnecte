@@ -1,211 +1,214 @@
-<div class="min-h-screen py-8">
-  <div class="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-12 gap-6">
+<div class="page">
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-    <!-- ============================
-      Left Sidebar : Filtres de recherche
-      Sticky pour rester visible au scroll
-    ============================ -->
-    <aside class="md:col-span-3">
-      <div class="bg-white rounded-lg border border-[#e0dfdc] overflow-hidden sticky top-[76px]">
-        <!-- Header style carte LinkedIn -->
-        <div class="relative h-14 bg-[#e0dfdc]"></div>
-        <div class="px-4 pb-4 -mt-6">
-          <div class="w-12 h-12 bg-white rounded-full border-2 border-white flex items-center justify-center text-xl shadow-sm mx-auto mb-2">
-            🔍
-          </div>
-          <h3 class="text-base font-semibold text-[#191919] text-center mb-1">Recherche</h3>
-          <p class="text-[12px] text-[#666666] text-center mb-4">Trouvez de nouveaux chantiers</p>
-          
-          <div class="border-t border-[#e0dfdc] pt-4 space-y-4">
-            <!-- Filtre par métier ou mot-clé -->
-            <div class="form-control">
-              <label class="label pb-1"><span class="label-text font-semibold text-[#191919] text-[12px]">Mot-clé</span></label>
-              <input type="text" [(ngModel)]="searchMetier" (ngModelChange)="applyFilters()" placeholder="Ex: Peintre" 
-                     class="w-full h-8 px-3 bg-white border border-[#191919] rounded text-[14px] focus:ring-1 focus:ring-[#0a66c2] focus:border-[#0a66c2] outline-none">
-            </div>
+    <!-- Colonne gauche : recherche -->
+    <aside class="lg:col-span-3">
+      <div class="sticky top-24 card-bc overflow-hidden">
+        <div class="h-16 bg-gradient-to-r from-primary/15 via-secondary/10 to-accent/15"></div>
+        <div class="px-5 pb-5 -mt-7">
+          <span class="icon-box mx-auto mb-3 w-14 h-14 rounded-2xl bg-base-100 shadow-md ring-1 ring-base-300">
+            <lucide-icon name="search" class="w-6 h-6"></lucide-icon>
+          </span>
+          <h3 class="text-center text-lg font-bold text-base-content">Recherche</h3>
+          <p class="mt-0.5 text-center text-xs text-base-content/55">Trouvez de nouveaux chantiers</p>
 
-            <!-- Filtre par ville -->
-            <div class="form-control">
-              <label class="label pb-1"><span class="label-text font-semibold text-[#191919] text-[12px]">Ville</span></label>
-              <input type="text" [(ngModel)]="searchVille" (ngModelChange)="applyFilters()" placeholder="Ex: Conakry" 
-                     class="w-full h-8 px-3 bg-white border border-[#191919] rounded text-[14px] focus:ring-1 focus:ring-[#0a66c2] focus:border-[#0a66c2] outline-none">
+          <div class="mt-5 space-y-4 border-t border-base-300/70 pt-5">
+            <div>
+              <label class="field-label">Mot-clé</label>
+              <div class="input-icon">
+                <lucide-icon name="search"></lucide-icon>
+                <input type="text" [(ngModel)]="searchMetier" (ngModelChange)="applyFilters()" placeholder="Titre, description, auteur…" class="input w-full">
+              </div>
             </div>
           </div>
         </div>
       </div>
     </aside>
 
-    <!-- ============================
-      Zone principale : Feed (Liste des annonces)
-    ============================ -->
-    <main class="md:col-span-6 space-y-4">
-      
-      <!-- État vide : affiché si filteredAnnonces est vide -->
-      <div *ngIf="filteredAnnonces.length === 0" class="bg-white rounded-lg border border-[#e0dfdc] p-8 text-center">
-        <h3 class="text-[16px] font-semibold text-[#191919] mb-1">Aucune annonce trouvée</h3>
-        <p class="text-[14px] text-[#666666]">Modifiez vos critères de recherche pour voir plus de résultats.</p>
+    <!-- Fil d'annonces -->
+    <main class="lg:col-span-6 space-y-4">
+      <div class="flex items-center justify-between gap-3 flex-wrap">
+        <div>
+          <h1 class="font-display text-2xl font-extrabold tracking-tight text-base-content">Annonces</h1>
+          <p class="text-sm text-base-content/55">Les derniers besoins et offres publiés</p>
+        </div>
+        <a routerLink="/publier" class="btn btn-primary rounded-full">
+          <lucide-icon name="plus" class="w-4 h-4"></lucide-icon>
+          Publier une annonce
+        </a>
       </div>
 
-      <!-- Carte d'annonce (style LinkedIn Feed) -->
-      <div *ngFor="let annonce of filteredAnnonces" 
-           class="bg-white rounded-lg border border-[#e0dfdc] flex flex-col">
-        
-        <!-- En-tête de la carte : avatar, nom, ville, date et actions -->
-        <div class="p-4 flex items-start justify-between">
-          <div class="flex items-center gap-2">
-            <!-- Avatar cliquable -->
-            <div [routerLink]="['/profil', annonce.authorId]" class="w-12 h-12 rounded-full border border-[#e0dfdc] flex items-center justify-center text-xl cursor-pointer hover:bg-gray-50">
-              👤
-            </div>
-            <div>
-              <div class="flex items-center gap-2">
-                <h4 [routerLink]="['/profil', annonce.authorId]" class="font-semibold text-[14px] text-[#191919] hover:text-[#0a66c2] hover:underline cursor-pointer">{{annonce.client}}</h4>
-                <span class="text-[#666666] text-[12px]">• Membre</span>
+      <div *ngIf="filteredAnnonces.length === 0" class="empty-state">
+        <span class="icon-box mx-auto mb-4 w-14 h-14 rounded-2xl"><lucide-icon name="inbox" class="w-6 h-6"></lucide-icon></span>
+        <h3 class="text-lg font-bold text-base-content">Aucune annonce trouvée</h3>
+        <p class="mt-1 text-sm text-base-content/60">Modifiez vos critères de recherche pour voir plus de résultats.</p>
+      </div>
+
+      <div *ngIf="toastMessage" class="toast-bc">
+        <lucide-icon name="circle-check" class="w-4 h-4 text-success"></lucide-icon>
+        {{ toastMessage }}
+      </div>
+
+      <article *ngFor="let annonce of filteredAnnonces" class="card-bc overflow-hidden">
+        <div class="p-4 sm:p-5">
+          <!-- En-tête -->
+          <div class="flex items-start justify-between gap-3">
+            <div class="flex items-center gap-3 min-w-0">
+              <button type="button" [routerLink]="['/profil', annonce.userId]" class="avatar-bc h-11 w-11 hover:bg-base-300/60 transition-colors" aria-label="Voir le profil">
+                <lucide-icon name="user" class="w-5 h-5"></lucide-icon>
+              </button>
+              <div class="min-w-0">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <h4 [routerLink]="['/profil', annonce.userId]" class="text-sm font-bold text-base-content hover:text-primary cursor-pointer truncate">{{ annonce.fullName }}</h4>
+                  <span class="chip text-[10px] py-1">Membre</span>
+                </div>
+                <p class="mt-0.5 text-xs text-base-content/55 flex items-center gap-1.5 flex-wrap">
+                  <span *ngIf="annonce.date">{{ annonce.date }}</span>
+                </p>
               </div>
-              <p class="text-[12px] text-[#666666] m-0">{{annonce.ville}}</p>
-              <p class="text-[12px] text-[#666666] m-0 flex items-center gap-1">
-                {{annonce.date}} • 
-                <span class="text-[10px]">🌍</span>
-              </p>
+            </div>
+
+            <div class="flex items-center gap-1.5 shrink-0">
+              <button *ngIf="!isOwnPost(annonce)" routerLink="/messages"
+                      [queryParams]="annonce.userId ? { with: annonce.userId } : {}" class="btn btn-soft btn-sm rounded-full">
+                <lucide-icon name="message-circle" class="w-3.5 h-3.5"></lucide-icon>
+                Contacter
+              </button>
+
+              <ng-container *ngIf="isOwnPost(annonce)">
+                <button (click)="startEdit(annonce)" class="btn btn-ghost btn-sm btn-icon w-9 h-9" title="Modifier" aria-label="Modifier">
+                  <lucide-icon name="pencil" class="w-4 h-4"></lucide-icon>
+                </button>
+                <button (click)="deleteAnnonce(annonce.id)" class="btn btn-ghost btn-sm btn-icon w-9 h-9 text-error hover:bg-error/10" title="Supprimer" aria-label="Supprimer">
+                  <lucide-icon name="trash-2" class="w-4 h-4"></lucide-icon>
+                </button>
+              </ng-container>
             </div>
           </div>
-          
+
+          <!-- Contenu -->
+          <div class="mt-4">
+            <div *ngIf="getImageUrl(annonce.imageUrl || annonce.image) as imageUrl" class="mb-4 overflow-hidden rounded-xl border border-base-300/70 bg-base-200">
+              <img [routerLink]="['/annonces', annonce.id]" [src]="imageUrl" alt="Illustration de l'annonce" loading="lazy"
+                   class="h-64 w-full cursor-pointer object-cover transition-transform duration-500 hover:scale-[1.02]">
+            </div>
+
+            <ng-container *ngIf="editingAnnonceId !== annonce.id">
+              <div class="flex items-start gap-2 flex-wrap">
+                <h3 [routerLink]="['/annonces', annonce.id]" class="text-lg font-bold text-base-content hover:text-primary cursor-pointer leading-snug">
+                  {{ annonce.titre }}
+                </h3>
+              </div>
+              <p class="mt-3 whitespace-pre-wrap text-sm leading-7 text-base-content/80">{{ annonce.description }}</p>
+            </ng-container>
+
+            <div *ngIf="editingAnnonceId === annonce.id" class="mt-2 space-y-3 soft-row p-3">
+              <input type="text" [(ngModel)]="editingAnnonceData.titre" placeholder="Titre de l'annonce" class="input w-full font-semibold">
+              <textarea [(ngModel)]="editingAnnonceData.description" rows="3" class="textarea w-full"></textarea>
+              <div class="flex justify-end gap-2">
+                <button (click)="cancelEdit()" class="btn btn-ghost btn-sm rounded-full">Annuler</button>
+                <button (click)="saveEdit()" class="btn btn-primary btn-sm rounded-full">
+                  <lucide-icon name="check" class="w-4 h-4"></lucide-icon>
+                  Enregistrer
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Compteurs -->
+        <div class="flex items-center justify-between border-t border-base-300/70 px-4 sm:px-5 py-2.5 text-xs text-base-content/60">
           <div class="flex items-center gap-2">
-            <!-- Bouton "Contacter" (Se connecter sur LinkedIn) -->
-            <button *ngIf="annonce.client !== 'Moi (Client)'" routerLink="/messages"
-                    class="text-[14px] font-semibold text-[#0a66c2] hover:bg-[#e6f0f8] px-3 py-1 rounded-full transition-colors flex items-center gap-1">
-              <span>+</span> Contacter
-            </button>
-
-            <!-- Actions directes : Modifier / Supprimer (pour l'auteur de l'annonce) -->
-            <div *ngIf="annonce.client === 'Moi (Client)'" class="flex items-center gap-1">
-              <button (click)="startEdit(annonce)" 
-                      class="p-2 rounded-full text-[#666666] hover:text-[#0a66c2] hover:bg-gray-100 transition-colors flex items-center gap-1"
-                      title="Modifier">
-                <span class="text-lg">✏️</span>
-                <span class="hidden sm:inline text-[12px] font-semibold">Modifier</span>
-              </button>
-              <button (click)="deleteAnnonce(annonce.id)" 
-                      class="p-2 rounded-full text-[#666666] hover:text-red-600 hover:bg-red-50 transition-colors flex items-center gap-1"
-                      title="Supprimer">
-                <span class="text-lg">🗑️</span>
-                <span class="hidden sm:inline text-[12px] font-semibold">Supprimer</span>
-              </button>
-            </div>
+            <span class="flex h-5 w-5 items-center justify-center rounded-full bg-primary text-primary-content">
+              <lucide-icon name="thumbs-up" class="w-3 h-3"></lucide-icon>
+            </span>
+            <span class="font-medium">{{ annonce.likes }}</span>
           </div>
-        </div>
-
-        <!-- Corps de la carte : contenu de l'annonce -->
-        <div class="px-4 pb-2">
-          <ng-container *ngIf="editingAnnonceId !== annonce.id">
-            <h3 class="text-[14px] font-semibold text-[#191919] mb-1">
-              {{annonce.titre}}
-              <span *ngIf="annonce.urgence === 'Urgent'" class="text-[#cc1016] text-[12px] font-bold ml-1 uppercase">(Urgent)</span>
-            </h3>
-            <p class="text-[14px] text-[#666666] mb-2 font-medium">Recherche : {{annonce.metier}}</p>
-            <p class="text-[14px] text-[#191919] whitespace-pre-wrap leading-relaxed">{{annonce.description}}</p>
-          </ng-container>
-
-          <div *ngIf="editingAnnonceId === annonce.id" class="flex flex-col gap-2 my-2">
-            <input type="text" [(ngModel)]="editingAnnonceData.titre" placeholder="Titre de l'annonce" class="w-full text-[14px] font-semibold text-[#191919] p-2 border border-[#191919] rounded focus:outline-none focus:ring-1 focus:ring-[#0a66c2]">
-            <textarea [(ngModel)]="editingAnnonceData.description" rows="3" class="w-full text-[14px] text-[#191919] p-2 border border-[#191919] rounded focus:outline-none focus:ring-1 focus:ring-[#0a66c2]"></textarea>
-            <div class="flex gap-2 justify-end">
-              <button (click)="cancelEdit()" class="px-4 py-1 text-[14px] font-semibold text-[#666666] hover:bg-gray-100 rounded-full">Annuler</button>
-              <button (click)="saveEdit()" class="px-4 py-1 text-[14px] font-semibold text-white bg-[#0a66c2] hover:bg-[#004182] rounded-full">Enregistrer</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Barre de stats : compteur de likes et de commentaires -->
-        <div class="px-4 py-2 flex justify-between items-center text-[12px] text-[#666666] border-b border-[#e0dfdc]">
-          <div class="flex items-center gap-1">
-            <span class="bg-[#0a66c2] text-white rounded-full w-4 h-4 flex items-center justify-center text-[10px]">👍</span>
-            <span>{{annonce.likes}}</span>
-          </div>
-          <div class="hover:text-[#0a66c2] hover:underline cursor-pointer" (click)="toggleComments(annonce.id)">
-            {{annonce.comments?.length || 0}} commentaires
-          </div>
-        </div>
-
-        <!-- Barre d'actions sociales -->
-        <div class="px-2 py-1 flex items-center justify-between">
-          <button (click)="toggleLike(annonce.id)" 
-                  [ngClass]="annonce.likedByMe ? 'text-[#0a66c2]' : 'text-[#666666]'"
-                  class="flex-1 flex items-center justify-center gap-1 py-3 rounded-md font-semibold text-[14px] hover:bg-gray-100 transition-colors">
-            <span class="text-lg leading-none" [ngClass]="annonce.likedByMe ? 'fill-[#0a66c2]' : ''">👍</span> 
-            J'aime
-          </button>
-          
-          <button (click)="toggleComments(annonce.id)" 
-                  class="flex-1 flex items-center justify-center gap-1 py-3 rounded-md text-[#666666] font-semibold text-[14px] hover:bg-gray-100 transition-colors">
-            <span class="text-lg leading-none">💬</span> Commenter
-          </button>
-          
-          <button (click)="sharePost(annonce)" 
-                  class="flex-1 flex items-center justify-center gap-1 py-3 rounded-md text-[#666666] font-semibold text-[14px] hover:bg-gray-100 transition-colors">
-            <span class="text-lg leading-none">🔄</span> Republier
-          </button>
-          
-          <button routerLink="/messages" 
-                  class="flex-1 flex items-center justify-center gap-1 py-3 rounded-md text-[#666666] font-semibold text-[14px] hover:bg-gray-100 transition-colors">
-            <span class="text-lg leading-none">✈️</span> Envoyer
+          <button (click)="toggleComments(annonce.id)" class="hover:text-primary transition-colors font-medium">
+            {{ annonce.comments?.length || 0 }} commentaire(s)
           </button>
         </div>
 
-        <!-- Section commentaires dépliable -->
-        <div *ngIf="showComments[annonce.id]" class="px-4 pb-4 pt-2">
-          <div class="flex gap-2 mb-4">
-            <div class="w-10 h-10 rounded-full border border-[#e0dfdc] shrink-0 flex items-center justify-center">👤</div>
+        <!-- Actions -->
+        <div class="grid grid-cols-4 gap-1 border-t border-base-300/70 px-2 py-1.5">
+          <button (click)="toggleLike(annonce.id)" [ngClass]="annonce.likedByMe ? 'text-primary bg-primary/8' : 'text-base-content/65 hover:bg-base-200'" class="flex items-center justify-center gap-1.5 rounded-lg py-2.5 text-xs font-semibold transition-colors">
+            <lucide-icon name="thumbs-up" class="w-4 h-4"></lucide-icon><span class="hidden sm:inline">J'aime</span>
+          </button>
+          <button (click)="toggleComments(annonce.id)" class="flex items-center justify-center gap-1.5 rounded-lg py-2.5 text-xs font-semibold text-base-content/65 hover:bg-base-200 transition-colors">
+            <lucide-icon name="message-circle" class="w-4 h-4"></lucide-icon><span class="hidden sm:inline">Commenter</span>
+          </button>
+          <button (click)="sharePost(annonce)" class="flex items-center justify-center gap-1.5 rounded-lg py-2.5 text-xs font-semibold text-base-content/65 hover:bg-base-200 transition-colors">
+            <lucide-icon name="share-2" class="w-4 h-4"></lucide-icon><span class="hidden sm:inline">Partager</span>
+          </button>
+          <button routerLink="/messages" class="flex items-center justify-center gap-1.5 rounded-lg py-2.5 text-xs font-semibold text-base-content/65 hover:bg-base-200 transition-colors">
+            <lucide-icon name="send" class="w-4 h-4"></lucide-icon><span class="hidden sm:inline">Envoyer</span>
+          </button>
+        </div>
+
+        <!-- Commentaires -->
+        <div *ngIf="showComments[annonce.id]" class="border-t border-base-300/70 bg-base-200/50 px-4 sm:px-5 py-4">
+          <div class="mb-4 flex gap-3">
+            <span class="avatar-bc h-9 w-9 bg-base-100"><lucide-icon name="user" class="w-4 h-4"></lucide-icon></span>
             <div class="flex-1">
-              <input type="text" [(ngModel)]="newComment[annonce.id]" (keyup.enter)="addComment(annonce.id)" placeholder="Ajouter un commentaire..." 
-                     class="w-full h-10 px-4 bg-white border border-[#666666] rounded-full focus:border-[#191919] focus:ring-1 focus:ring-[#191919] outline-none text-[14px]">
-              <button *ngIf="newComment[annonce.id]" (click)="addComment(annonce.id)" class="mt-2 px-3 py-1 bg-[#0a66c2] text-white text-[14px] font-semibold rounded-full hover:bg-[#004182]">
-                Publier
-              </button>
+              <input type="text" [(ngModel)]="newComment[annonce.id]" (keyup.enter)="addComment(annonce.id)" placeholder="Ajouter un commentaire…" class="input w-full rounded-full">
+              <button *ngIf="newComment[annonce.id]" (click)="addComment(annonce.id)" class="btn btn-primary btn-xs rounded-full mt-2">Publier</button>
             </div>
           </div>
 
-          <div class="space-y-4 max-h-60 overflow-y-auto">
-            <div *ngFor="let comment of annonce.comments" class="flex gap-2">
-              <div class="w-10 h-10 rounded-full border border-[#e0dfdc] shrink-0 flex items-center justify-center">👤</div>
-              <div class="flex-1">
-                <div class="bg-[#f3f2ef] rounded-lg rounded-tl-none p-3">
-                  <p class="text-[14px] font-semibold text-[#191919]">{{comment.author}}</p>
-                  <p class="text-[14px] text-[#191919] mt-1">{{comment.text}}</p>
-                </div>
-                <div class="flex gap-3 mt-1 ml-2 text-[12px] font-semibold text-[#666666]">
-                  <button class="hover:bg-gray-100 px-1 rounded">J'aime</button>
-                  <button (click)="replyToComment(annonce.id, comment.author)" class="hover:bg-gray-100 px-1 rounded">Répondre</button>
+          <div class="space-y-3">
+            <div *ngFor="let comment of annonce.comments" class="flex gap-3">
+              <span class="avatar-bc h-8 w-8 bg-base-100"><lucide-icon name="user" class="w-3.5 h-3.5"></lucide-icon></span>
+              <div class="flex-1 rounded-xl bg-base-100 border border-base-300/60 p-3">
+                <p class="text-sm font-bold text-base-content">{{ comment.author }}</p>
+                <p class="mt-1 text-sm text-base-content/75">{{ comment.text }}</p>
+                <div class="mt-2 flex gap-4 text-xs font-semibold text-base-content/55">
+                  <button class="hover:text-primary">J'aime</button>
+                  <button (click)="replyToComment(annonce.id, comment.author)" class="hover:text-primary inline-flex items-center gap-1">
+                    <lucide-icon name="reply" class="w-3 h-3"></lucide-icon>Répondre
+                  </button>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </article>
     </main>
 
-    <!-- ============================
-      Right Sidebar : Actualités / Recommandations
-    ============================ -->
-    <aside class="hidden md:block md:col-span-3">
-      <div class="bg-white rounded-lg border border-[#e0dfdc] p-4 sticky top-[76px]">
-        <h3 class="text-[16px] font-semibold text-[#191919] mb-4">Actualités BatiConnect</h3>
-        <ul class="space-y-4">
-          <li class="cursor-pointer group">
-            <p class="text-[14px] font-semibold text-[#191919] group-hover:text-[#0a66c2] group-hover:underline">Comment bien choisir son peintre ?</p>
-            <p class="text-[12px] text-[#666666]">Il y a 2j • 1,234 lecteurs</p>
+    <!-- Colonne droite : actualités -->
+    <aside class="hidden lg:block lg:col-span-3">
+      <div class="sticky top-24 card-bc p-5">
+        <div class="flex items-center gap-2 mb-4">
+          <lucide-icon name="newspaper" class="w-4 h-4 text-primary"></lucide-icon>
+          <h3 class="text-base font-bold text-base-content">Actualités BatiConnect</h3>
+        </div>
+        <ul class="space-y-1">
+          <li class="cursor-pointer rounded-xl p-3 transition-colors hover:bg-base-200">
+            <p class="text-sm font-semibold text-base-content hover:text-primary">Comment bien choisir son peintre ?</p>
+            <p class="mt-1 text-xs text-base-content/50">Il y a 2 j • 1 234 lecteurs</p>
           </li>
-          <li class="cursor-pointer group">
-            <p class="text-[14px] font-semibold text-[#191919] group-hover:text-[#0a66c2] group-hover:underline">Top 10 des artisans à Conakry</p>
-            <p class="text-[12px] text-[#666666]">Il y a 5j • 890 lecteurs</p>
+          <li class="cursor-pointer rounded-xl p-3 transition-colors hover:bg-base-200">
+            <p class="text-sm font-semibold text-base-content hover:text-primary">Top 10 des artisans à Conakry</p>
+            <p class="mt-1 text-xs text-base-content/50">Il y a 5 j • 890 lecteurs</p>
           </li>
-          <li class="cursor-pointer group">
-            <p class="text-[14px] font-semibold text-[#191919] group-hover:text-[#0a66c2] group-hover:underline">Éviter les arnaques de chantier</p>
-            <p class="text-[12px] text-[#666666]">Il y a 1 sem • 3,450 lecteurs</p>
+          <li class="cursor-pointer rounded-xl p-3 transition-colors hover:bg-base-200">
+            <p class="text-sm font-semibold text-base-content hover:text-primary">Éviter les arnaques de chantier</p>
+            <p class="mt-1 text-xs text-base-content/50">Il y a 1 sem. • 3 450 lecteurs</p>
           </li>
         </ul>
       </div>
     </aside>
+  </div>
+</div>
 
+<!-- Modale de suppression -->
+<div *ngIf="showDeleteModal" class="modal-backdrop-bc">
+  <div class="modal-panel-bc max-w-md p-6">
+    <span class="icon-box bg-error/10 text-error mb-4"><lucide-icon name="trash-2"></lucide-icon></span>
+    <h3 class="text-xl font-bold text-base-content">Supprimer cette annonce ?</h3>
+    <p class="mt-2 text-sm leading-6 text-base-content/65">Cette action est irréversible. Voulez-vous vraiment supprimer cette annonce ?</p>
+    <div class="mt-6 flex justify-end gap-2">
+      <button type="button" (click)="cancelDelete()" class="btn btn-ghost rounded-full">Non</button>
+      <button type="button" (click)="confirmDeleteAnnonce()" class="btn btn-error text-error-content rounded-full">Oui, supprimer</button>
+    </div>
   </div>
 </div>

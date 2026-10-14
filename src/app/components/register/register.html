@@ -1,111 +1,144 @@
-<div class="min-h-screen bg-[#f3f2ef] flex flex-col">
-  
-  <!-- Header / Navbar simple (Style LinkedIn) -->
-  <div class="w-full px-6 py-8 flex justify-center">
-    <a routerLink="/" class="flex items-center gap-2 group w-max">
-      <div class="text-primary text-[36px] font-black tracking-tight">
-        🏗️ Bati<span class="text-slate-800">Connect</span>
+<div class="min-h-[calc(100vh-4rem)] flex items-center justify-center px-4 py-10">
+  <div class="w-full max-w-4xl card-bc overflow-hidden grid lg:grid-cols-5 shadow-float animate-fade-up">
+
+    <!-- Panneau marque -->
+    <aside class="hidden lg:flex lg:col-span-2 flex-col justify-between p-10 bg-primary text-primary-content relative overflow-hidden">
+      <div class="absolute -top-20 -right-20 w-64 h-64 rounded-full bg-white/10 blur-2xl"></div>
+      <div class="absolute -bottom-24 -left-16 w-72 h-72 rounded-full bg-accent/30 blur-3xl"></div>
+
+      <div class="relative flex items-center gap-2.5">
+        <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-white/15 ring-1 ring-white/25">
+          <lucide-icon name="hard-hat" class="w-5 h-5"></lucide-icon>
+        </span>
+        <span class="font-display text-xl font-extrabold tracking-tight">BatiConnect</span>
       </div>
-    </a>
-  </div>
 
-  <div class="text-center mb-8 px-4">
-    <h1 class="text-[32px] font-medium text-slate-900 leading-tight">Tirez le meilleur parti de votre vie professionnelle</h1>
-  </div>
+      <div class="relative space-y-6">
+        <h2 class="font-display text-3xl font-extrabold leading-tight tracking-tight">Tirez le meilleur parti de votre vie professionnelle.</h2>
+        <ul class="space-y-3 text-sm text-primary-content/85">
+          <li class="flex items-center gap-3"><lucide-icon name="users" class="w-4 h-4 shrink-0"></lucide-icon>+500 artisans déjà inscrits</li>
+          <li class="flex items-center gap-3"><lucide-icon name="briefcase" class="w-4 h-4 shrink-0"></lucide-icon>Des chantiers chaque jour</li>
+          <li class="flex items-center gap-3"><lucide-icon name="handshake" class="w-4 h-4 shrink-0"></lucide-icon>Mise en relation gratuite</li>
+        </ul>
+      </div>
 
-  <!-- Form Container -->
-  <div class="flex-1 flex flex-col items-center px-4 pb-20">
-    <div class="w-full max-w-[400px]">
-      
-      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-8">
+      <p class="relative text-xs text-primary-content/60">© BatiConnect — Conakry, Guinée</p>
+    </aside>
 
-        <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="space-y-4">
+    <!-- Formulaire -->
+    <div class="lg:col-span-3 p-8 sm:p-10">
+      <div class="mb-8">
+        <span class="eyebrow mb-4">Inscription</span>
+        <h1 class="page-title">Créer un compte</h1>
+        <p class="page-subtitle">Rejoignez BatiConnect en moins d'une minute.</p>
+      </div>
 
-          <div *ngIf="errorMessage" class="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md text-sm font-medium">
-            {{ errorMessage }}
-          </div>
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="space-y-4">
+        <div *ngIf="errorMessage" class="flex items-start gap-3 rounded-xl border border-error/25 bg-error/8 px-4 py-3 text-sm font-medium text-error">
+          <lucide-icon name="triangle-alert" class="w-4 h-4 mt-0.5 shrink-0"></lucide-icon>
+          {{ errorMessage }}
+        </div>
 
-          <div class="form-control">
-            <select formControlName="role" class="w-full h-14 px-4 rounded-md border border-slate-600 focus:border-primary focus:ring-1 focus:ring-primary bg-transparent outline-none transition-all text-slate-900 font-medium">
+        <div>
+          <label class="field-label" for="reg-role">Je suis</label>
+          <div class="input-icon">
+            <lucide-icon name="circle-user-round"></lucide-icon>
+            <select id="reg-role" formControlName="role" class="select select-lg w-full text-base">
               <option value="CLIENT">Client (Particulier)</option>
               <option value="OUVRIER">Ouvrier (Professionnel)</option>
             </select>
           </div>
-          
-          <div class="form-control">
-            <input type="text" formControlName="nomComplet" placeholder="Nom complet" 
-                   class="w-full h-14 px-4 rounded-md border bg-transparent outline-none transition-all text-slate-900 font-medium placeholder-slate-500"
-                   [ngClass]="{'border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500': registerForm.get('nomComplet')?.invalid && registerForm.get('nomComplet')?.touched, 'border-slate-600 focus:border-primary focus:ring-1 focus:ring-primary': !(registerForm.get('nomComplet')?.invalid && registerForm.get('nomComplet')?.touched)}">
-            <span *ngIf="registerForm.get('nomComplet')?.invalid && registerForm.get('nomComplet')?.touched" class="text-red-500 text-xs mt-1 ml-1 font-medium">Le nom complet est requis (min 2 caractères).</span>
-          </div>
-          
-          <div class="form-control">
-            <input type="text" formControlName="adresse" placeholder="Adresse" 
-                   class="w-full h-14 px-4 rounded-md border bg-transparent outline-none transition-all text-slate-900 font-medium placeholder-slate-500"
-                   [ngClass]="{'border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500': registerForm.get('adresse')?.invalid && registerForm.get('adresse')?.touched, 'border-slate-600 focus:border-primary focus:ring-1 focus:ring-primary': !(registerForm.get('adresse')?.invalid && registerForm.get('adresse')?.touched)}">
-            <span *ngIf="registerForm.get('adresse')?.invalid && registerForm.get('adresse')?.touched" class="text-red-500 text-xs mt-1 ml-1 font-medium">L'adresse est requise.</span>
-          </div>
-
-          <div class="form-control">
-            <input type="text" formControlName="ville" placeholder="Ville" 
-                   class="w-full h-14 px-4 rounded-md border bg-transparent outline-none transition-all text-slate-900 font-medium placeholder-slate-500"
-                   [ngClass]="{'border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500': registerForm.get('ville')?.invalid && registerForm.get('ville')?.touched, 'border-slate-600 focus:border-primary focus:ring-1 focus:ring-primary': !(registerForm.get('ville')?.invalid && registerForm.get('ville')?.touched)}">
-            <span *ngIf="registerForm.get('ville')?.invalid && registerForm.get('ville')?.touched" class="text-red-500 text-xs mt-1 ml-1 font-medium">La ville est requise.</span>
-          </div>
-
-          <div class="form-control">
-            <input type="email" formControlName="email" placeholder="E-mail ou téléphone" 
-                   class="w-full h-14 px-4 rounded-md border bg-transparent outline-none transition-all text-slate-900 font-medium placeholder-slate-500"
-                   [ngClass]="{'border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500': registerForm.get('email')?.invalid && registerForm.get('email')?.touched, 'border-slate-600 focus:border-primary focus:ring-1 focus:ring-primary': !(registerForm.get('email')?.invalid && registerForm.get('email')?.touched)}">
-            <span *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched" class="text-red-500 text-xs mt-1 ml-1 font-medium">
-              <ng-container *ngIf="registerForm.get('email')?.errors?.['required'] || registerForm.get('email')?.errors?.['email']">
-                Veuillez entrer une adresse e-mail valide.
-              </ng-container>
-              <ng-container *ngIf="registerForm.get('email')?.errors?.['emailTypo'] || registerForm.get('email')?.errors?.['invalidDomain']">
-                Le nom de domaine semble incorrect (ex: gmail.com, hotmail.com).
-              </ng-container>
-            </span>
-          </div>
-
-          <div class="form-control">
-            <input type="password" formControlName="password" placeholder="Mot de passe (au moins 6 caractères)" 
-                   class="w-full h-14 px-4 rounded-md border bg-transparent outline-none transition-all text-slate-900 font-medium placeholder-slate-500"
-                   [ngClass]="{'border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500': registerForm.get('password')?.invalid && registerForm.get('password')?.touched, 'border-slate-600 focus:border-primary focus:ring-1 focus:ring-primary': !(registerForm.get('password')?.invalid && registerForm.get('password')?.touched)}">
-            <span *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched" class="text-red-500 text-xs mt-1 ml-1 font-medium">Le mot de passe doit contenir au moins 6 caractères.</span>
-          </div>
-
-          <p class="text-[12px] text-slate-500 text-center leading-relaxed mt-4 mb-4">
-            En cliquant sur Accepter et s'inscrire, vous acceptez les <a class="text-primary font-semibold hover:underline cursor-pointer">Conditions d'utilisation</a>, la <a class="text-primary font-semibold hover:underline cursor-pointer">Politique de confidentialité</a> et la <a class="text-primary font-semibold hover:underline cursor-pointer">Politique relative aux cookies</a> de BatiConnect.
-          </p>
-
-          <button type="submit" 
-                  [disabled]="registerForm.invalid || isLoading"
-                  class="w-full h-[52px] bg-primary hover:bg-primary/90 text-white rounded-full text-base font-bold transition-all disabled:bg-slate-200 disabled:text-slate-500 mt-2 flex justify-center items-center gap-2">
-            <span *ngIf="isLoading" class="loading loading-spinner loading-sm"></span>
-            <span *ngIf="!isLoading">Accepter et s'inscrire</span>
-            <span *ngIf="isLoading">Inscription...</span>
-          </button>
-        </form>
-
-        <div class="relative flex items-center py-6">
-          <div class="flex-grow border-t border-slate-300"></div>
-          <span class="flex-shrink-0 mx-4 text-slate-500 text-sm font-medium">ou</span>
-          <div class="flex-grow border-t border-slate-300"></div>
-        </div>
-        
-        <div class="space-y-3">
-          <button class="w-full h-[52px] rounded-full border border-slate-500 flex items-center justify-center gap-3 font-semibold text-slate-600 hover:bg-slate-50 hover:border-slate-700 transition-all">
-            <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-5 h-5"> S'inscrire avec Google
-          </button>
         </div>
 
+        <div>
+          <label class="field-label" for="reg-nom">Nom complet</label>
+          <div class="input-icon">
+            <lucide-icon name="user"></lucide-icon>
+            <input id="reg-nom" type="text" formControlName="nomComplet" placeholder="Mamadou Diallo" autocomplete="name"
+                   class="input input-lg w-full text-base"
+                   [class.input-error]="registerForm.get('nomComplet')?.invalid && registerForm.get('nomComplet')?.touched">
+          </div>
+          <span *ngIf="registerForm.get('nomComplet')?.invalid && registerForm.get('nomComplet')?.touched" class="field-error">Le nom complet est requis (min 2 caractères).</span>
+        </div>
+
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div>
+            <label class="field-label" for="reg-adresse">Adresse</label>
+            <div class="input-icon">
+              <lucide-icon name="house"></lucide-icon>
+              <input id="reg-adresse" type="text" formControlName="adresse" placeholder="Quartier, rue…" autocomplete="street-address"
+                     class="input input-lg w-full text-base"
+                     [class.input-error]="registerForm.get('adresse')?.invalid && registerForm.get('adresse')?.touched">
+            </div>
+            <span *ngIf="registerForm.get('adresse')?.invalid && registerForm.get('adresse')?.touched" class="field-error">L'adresse est requise.</span>
+          </div>
+          <div>
+            <label class="field-label" for="reg-ville">Ville</label>
+            <div class="input-icon">
+              <lucide-icon name="map-pin"></lucide-icon>
+              <input id="reg-ville" type="text" formControlName="ville" placeholder="Conakry" autocomplete="address-level2"
+                     class="input input-lg w-full text-base"
+                     [class.input-error]="registerForm.get('ville')?.invalid && registerForm.get('ville')?.touched">
+            </div>
+            <span *ngIf="registerForm.get('ville')?.invalid && registerForm.get('ville')?.touched" class="field-error">La ville est requise.</span>
+          </div>
+        </div>
+
+        <div>
+          <label class="field-label" for="reg-email">E-mail</label>
+          <div class="input-icon">
+            <lucide-icon name="mail"></lucide-icon>
+            <input id="reg-email" type="email" formControlName="email" placeholder="vous@exemple.com" autocomplete="email"
+                   class="input input-lg w-full text-base"
+                   [class.input-error]="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">
+          </div>
+          <span *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched" class="field-error">
+            <ng-container *ngIf="registerForm.get('email')?.errors?.['required'] || registerForm.get('email')?.errors?.['email']">
+              Veuillez entrer une adresse e-mail valide.
+            </ng-container>
+            <ng-container *ngIf="registerForm.get('email')?.errors?.['emailTypo'] || registerForm.get('email')?.errors?.['invalidDomain']">
+              Le nom de domaine semble incorrect (ex : gmail.com, hotmail.com).
+            </ng-container>
+          </span>
+        </div>
+
+        <div>
+          <label class="field-label" for="reg-password">Mot de passe</label>
+          <div class="input-icon">
+            <lucide-icon name="lock-keyhole"></lucide-icon>
+            <input id="reg-password" type="password" formControlName="password" placeholder="Au moins 6 caractères" autocomplete="new-password"
+                   class="input input-lg w-full text-base"
+                   [class.input-error]="registerForm.get('password')?.invalid && registerForm.get('password')?.touched">
+          </div>
+          <span *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched" class="field-error">Le mot de passe doit contenir au moins 6 caractères.</span>
+        </div>
+
+        <p class="text-xs text-base-content/55 leading-relaxed pt-1">
+          En cliquant sur « Accepter et s'inscrire », vous acceptez les <a class="link-bc cursor-pointer">Conditions d'utilisation</a>, la <a class="link-bc cursor-pointer">Politique de confidentialité</a> et la <a class="link-bc cursor-pointer">Politique relative aux cookies</a> de BatiConnect.
+        </p>
+
+        <button type="submit" [disabled]="registerForm.invalid || isLoading" class="btn btn-primary btn-lg w-full rounded-xl">
+          <span *ngIf="isLoading" class="loading loading-spinner loading-sm"></span>
+          <span *ngIf="!isLoading">Accepter et s'inscrire</span>
+          <span *ngIf="isLoading">Inscription…</span>
+        </button>
+      </form>
+
+      <div class="relative flex items-center py-6">
+        <div class="grow border-t border-base-300"></div>
+        <span class="mx-4 text-xs font-semibold uppercase tracking-widest text-base-content/45">ou</span>
+        <div class="grow border-t border-base-300"></div>
       </div>
 
-      <p class="text-center mt-8 text-base text-slate-800 font-medium">
-        Vous avez déjà un compte ? 
-        <a routerLink="/login" class="text-primary font-semibold hover:underline">S'identifier</a>
-      </p>
+      <button type="button" class="btn btn-outline btn-lg w-full rounded-xl">
+        <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-5 h-5" alt="">
+        S'inscrire avec Google
+      </button>
 
+      <p class="mt-8 text-center text-sm text-base-content/65">
+        Vous avez déjà un compte ?
+        <a routerLink="/login" class="link-bc ml-1">S'identifier</a>
+      </p>
     </div>
   </div>
 </div>

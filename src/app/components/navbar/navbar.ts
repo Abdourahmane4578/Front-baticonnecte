@@ -1,12 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
+import { LucideAngularModule } from 'lucide-angular';
 import { AuthService } from '../../services/auth'; // Ajuste le chemin
+import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, LucideAngularModule],
   templateUrl: './navbar.html'
 })
 export class Navbar implements OnInit {
@@ -14,7 +16,7 @@ export class Navbar implements OnInit {
   currentUser: any = null;
   userProfilePic = 'https://api.dicebear.com/8.x/notionists/svg?seed=Felix';
 
-  constructor(private AuthService: AuthService, private router: Router) {}
+  constructor(private AuthService: AuthService, private router: Router, public theme: ThemeService) {}
 
   ngOnInit() {
     // On écoute en temps réel si l'utilisateur se connecte ou non
@@ -22,9 +24,9 @@ export class Navbar implements OnInit {
       this.isLoggedIn = state;
       if (state) {
         this.currentUser = this.AuthService.getUser();
-        if (this.currentUser && this.currentUser.username) {
-          this.userProfilePic = `https://api.dicebear.com/8.x/notionists/svg?seed=${this.currentUser.username}`;
-        }
+        const seed = this.currentUser?.nomComplet || this.currentUser?.username || 'Felix';
+        this.userProfilePic = this.currentUser?.imageUrl
+          || `https://api.dicebear.com/8.x/notionists/svg?seed=${seed}`;
       } else {
         this.currentUser = null;
       }

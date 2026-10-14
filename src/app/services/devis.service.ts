@@ -1,6 +1,9 @@
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject, Observable, of } from 'rxjs';
+import { tap, catchError } from 'rxjs/operators';
 import { isPlatformBrowser } from '@angular/common';
+import { API_URL } from '../config/config';
 
 /**
  * Modèle d'un Devis
@@ -35,8 +38,7 @@ export interface DevisStats {
 /**
  * DevisService
  * Gère la liste des devis de manière réactive via BehaviorSubject.
- * Persiste dans le localStorage (en attendant le backend).
- * À connecter à l'API backend en remplaçant les méthodes par des appels HTTP.
+ * Connecté à l'API backend HTTP avec persistance de secours localStorage.
  */
 @Injectable({
   providedIn: 'root'
@@ -97,16 +99,37 @@ export class DevisService {
   ];
 
   private devisSubject: BehaviorSubject<Devis[]>;
-  devis$ = new BehaviorSubject<Devis[]>([]).asObservable();
+  devis$: Observable<Devis[]>;
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object) {
+  constructor(
+    private http: HttpClient,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {
     const saved = this.loadFromStorage();
     this.devisSubject = new BehaviorSubject<Devis[]>(saved.length > 0 ? saved : this.initialDevis);
     this.devis$ = this.devisSubject.asObservable();
-    // On s'assure que le stockage initial existe
+
     if (saved.length === 0) {
       this.saveToStorage(this.initialDevis);
     }
+
+    this.loadDevisFromApi().subscribe();
+  }
+
+  /** Charge les devis depuis l'API HTTP */
+  loadDevisFromApi(): Observable<any> {
+    return this.http.get<any>(`${API_URL}/devis`).pipe(
+      tap((data: any) => {
+        const list = Array.isArray(data) ? data : (data?.data || []);
+        if (list.length > 0) {
+          this.emit(list);
+        }
+      }),
+      catchError((err) => {
+        console.warn("API /devis non disponible, utilisation du stockage local.", err?.status);
+        return of(null);
+      })
+    );
   }
 
   // ─── Persistance locale ─────────────────────────────────────────────────────
@@ -152,6 +175,12 @@ export class DevisService {
       dateCreation: new Date().toISOString().split('T')[0],
       statut: 'EN_ATTENTE'
     };
+
+    // Tente la création via l'API
+    this.http.post(`${API_URL}/devis`, data).pipe(
+      catchError(() => of(null))
+    ).subscribe();
+
     this.emit([newDevis, ...this.getAll()]);
     return newDevis;
   }
@@ -161,6 +190,11 @@ export class DevisService {
     const updated = this.getAll().map(d =>
       d.id === id ? { ...d, ...data } : d
     );
+
+    this.http.put(`${API_URL}/devis/${id}`, data).pipe(
+      catchError(() => of(null))
+    ).subscribe();
+
     this.emit(updated);
   }
 
@@ -181,6 +215,10 @@ export class DevisService {
 
   /** Supprime un devis */
   supprimer(id: string): void {
+    this.http.delete(`${API_URL}/devis/${id}`).pipe(
+      catchError(() => of(null))
+    ).subscribe();
+
     this.emit(this.getAll().filter(d => d.id !== id));
   }
 
@@ -200,3 +238,4 @@ export class DevisService {
     };
   }
 }
+
